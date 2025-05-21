@@ -10,8 +10,8 @@ void clear_stdin(void) {
 
 const char *status_str(bool ch) { return ch ? "[x]" : "[ ]"; }
 
-bool input_title(char *buf, int size) {
-  printf("New todo title: ");
+bool input_title(char *buf, int size, const char *prompt) {
+  printf("%s: ", prompt);
   if (fgets(buf, size, stdin) == NULL) {
     printf("Error when enter title!\n");
     return false;
@@ -50,7 +50,7 @@ int add_todo(Todo todos[], int capacity, int count, unsigned int *gloab_id) {
   }
 
   char title[TITLE_SIZE];
-  if (!input_title(title, sizeof(title))) {
+  if (!input_title(title, sizeof(title), "New todo title")) {
     return count;
   }
 
@@ -91,6 +91,31 @@ bool toggle_todo_status(Todo todos[], int count, unsigned int id) {
     }
   }
   return false;
+}
+
+bool edit_todo_title(Todo todos[], int count, unsigned int id) {
+  int pos = -1;
+  for (int i = 0; i < count; i++) {
+    if (id == todos[i].id) {
+      pos = i;
+      break;
+    }
+  }
+
+  if (pos == -1) {
+    fprintf(stderr, "Todo with ID %d not found!\n", id);
+    return false;
+  }
+
+  char title[TITLE_SIZE];
+  if (!input_title(title, sizeof(title), "Enter new title")) {
+    printf("The title has not been changed because"
+           " you have not entered a new one.\n");
+    return false;
+  }
+  strcpy(todos[pos].title, title);
+  printf("The headline has been successfully changed!\n");
+  return true;
 }
 
 void print_todos(Todo todos[], int count) {

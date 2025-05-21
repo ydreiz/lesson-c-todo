@@ -15,11 +15,12 @@ typedef struct {
 int add_todo(Todo todos[], int capacity, int count, unsigned int *gloabl_id);
 bool delete_todo(Todo todos[], int *count, unsigned int id);
 bool toggle_todo_status(Todo todos[], int count, unsigned int id);
+bool edit_todo_title(Todo todos[], int count, unsigned int id);
 void print_todos(Todo todos[], int count);
 
 void clear_stdin(void);
 const char *status_str(bool done);
-bool input_title(char *buf, int size);
+bool input_title(char *buf, int size, const char *prompt);
 bool input_status(void);
 
 bool save_todos(const char *filename, Todo todos[], int count);

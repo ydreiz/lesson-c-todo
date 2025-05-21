@@ -31,28 +31,36 @@ int main(void) {
       printf("Enter todo ID to toggle status: ");
       if (scanf("%u", &id) == 1) {
         toggle_todo_status(todos, count, id);
-        while (getchar() != '\n')
-          ;
+        clear_stdin();
       }
       break;
     }
     case 3: {
       unsigned int id;
-      printf("Enter todo ID to delete: ");
+      printf("Enter todo ID to edit title: ");
       if (scanf("%u", &id) == 1) {
-        delete_todo(todos, &count, id);
-        while (getchar() != '\n')
-          ;
+        clear_stdin();
+        edit_todo_title(todos, count, id);
       }
       break;
     }
-    case 4:
-      if (save_todos("todos.txt", todos, count))
-        printf("Todos saved successfully.\n");
-      else
-        printf("Error saving todos.\n");
+    case 4: {
+      unsigned int id;
+      printf("Enter todo ID to delete: ");
+      if (scanf("%u", &id) == 1) {
+        delete_todo(todos, &count, id);
+        clear_stdin();
+      }
       break;
+    }
     case 5:
+      if (save_todos("todos.txt", todos, count)) {
+        printf("Todos saved successfully.\n");
+      } else {
+        printf("Error saving todos.\n");
+      }
+      break;
+    case 6:
       count = load_todos("todos.txt", todos, MAX_TODOS);
       printf("Todos loaded.\n");
       break;
