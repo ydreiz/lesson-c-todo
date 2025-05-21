@@ -53,6 +53,7 @@ dkms.conf
 
 .cache/
 build/
+build-win/
 bin/
 obj/
 todos.txt

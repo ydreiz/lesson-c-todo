@@ -37,6 +37,13 @@ cmake ..
 make
 ```
 
+#### Using CMake for Windows
+```sh
+mkdir build-win && cd build-win
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw.cmake
+cmake --build .
+```
+
 #### Direct compilation with clang:
 ```sh
 clang -Iinclude src/*.c -o todos
