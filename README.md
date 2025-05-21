@@ -49,6 +49,15 @@ cmake --build .
 clang -Iinclude src/*.c -o todos
 ```
 
+#### Using dockcross
+```sh
+docker run --rm dockcross/linux-x64 > ./dockcross
+chmod +x ./dockcross
+
+./dockcross cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Windows
+./dockcross cmake --build build --config Release
+```
+
 ## USAGE:
 1. Run the program:
 ```sh
