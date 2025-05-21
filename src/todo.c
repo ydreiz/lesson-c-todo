@@ -118,7 +118,7 @@ bool edit_todo_title(Todo todos[], int count, unsigned int id) {
   return true;
 }
 
-void print_todos(Todo todos[], int count) {
+void print_todos(const Todo todos[], int count) {
   for (int i = 0; i < count; i++) {
     Todo todo = todos[i];
     if (count < 10) {
