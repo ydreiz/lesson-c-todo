@@ -15,7 +15,8 @@ all: $(BINDDIR) $(OBJDIR) \
 	$(BINDDIR)/structs \
 	$(BINDDIR)/structs_array \
 	$(BINDDIR)/structs_functions \
-	$(BINDDIR)/types
+	$(BINDDIR)/types \
+	$(BINDDIR)/consts
 
 $(BINDDIR) $(OBJDIR):
 	mkdir -p $@
@@ -51,6 +52,9 @@ $(BINDDIR)/structs_functions: $(OBJDIR)/structs_functions.o $(OBJDIR)/person.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(BINDDIR)/types: $(OBJDIR)/types.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(BINDDIR)/consts: $(OBJDIR)/consts.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(OBJDIR)/%.o: %.c
