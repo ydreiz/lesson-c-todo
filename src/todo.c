@@ -18,17 +18,13 @@ bool input_title(char *buf, int size) {
   }
   buf[strcspn(buf, "\n")] = '\0';
 
-  if (buf[strlen(buf) - 1] != '\n') {
-    clear_stdin();
-  }
-
   return strlen(buf) > 0;
 }
 
 bool input_status() {
   char ch[2];
   do {
-    printf("Status is ch [y/n] (Default: n): ");
+    printf("Status is done [y/n] (Default: n): ");
     if (fgets(ch, sizeof(ch), stdin) == NULL) {
       printf("Error when read status!\n");
       return false;
