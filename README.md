@@ -1,126 +1,178 @@
-# TODO List in C
+# Console TODO List in C
 
-A simple console-based TODO list written in C.
+> A strict, minimalistic implementation of a personal task manager in C with a simple menu and persistent storage between sessions.
 
-## FEATURES:
+## DESCRIPTION
 
-- Add tasks with title and completion status
-- Toggle task status (done/not done)
-- Delete tasks by ID
-- Save task list to todos.txt
-- Load tasks from file on startup
-- Interactive menu interface
+This is an educational project — a console TODO list written in C (C23), supporting basic task management operations: adding, toggling status, deleting, saving, and loading from a file.
+
+**Why C?**
+- Minimal dependencies, maximum memory control.
+- Educational value: the project demonstrates struct usage, file operations, and user input handling at a low level.
 
 ---
 
-## PROJECT STRUCTURE:
+## FEATURES
+
+- [x] Add tasks with a title, completion status, and unique ID
+- [x] Toggle task status (done/not done)
+- [x] Delete tasks by ID
+- [x] Save task list to `todos.txt` and load on startup
+- [x] Simple text menu interface
+- [ ] No support for subtasks, categories, or deadlines — intentionally omitted for focus on the basics
+
+---
+
+## PROJECT STRUCTURE
 
 ```sh
- lesson-c-todo
- ├── include
- │   ├── todo.h               # Header file defining the Todo data structure and related declarations
- │   └── ui.h                 # Header file declaring UI-related functions (menus, input, output)
- ├── src
- │   ├── file.c               # Source file handling file operations (loading, saving todos)
- │   ├── main.c               # Main program entry point and application logic
- │   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
- │   └── ui.c                 # Source file implementing user interface functions
- ├── CMakeLists.txt           # CMake build configuration file
- ├── README.md                # Project documentation and overview
- └── toolchain-mingw.cmake    # CMake toolchain file for cross-compiling to Windows using MinGW-w64
+lesson-c-todo
+├── include
+│   ├── todo.h               # Header file defining the Todo data structure and related declarations
+│   └── ui.h                 # Header file declaring UI-related functions (menus, input, output)
+├── src
+│   ├── file.c               # Source file handling file operations (loading, saving todos)
+│   ├── main.c               # Main program entry point and application logic
+│   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
+│   └── ui.c                 # Source file implementing user interface functions
+├── CMakeLists.txt           # CMake build configuration file
+├── README.md                # Project documentation and overview
+└── toolchain-mingw.cmake    # CMake toolchain file for cross-compiling to Windows using MinGW-w64
 ```
 
 ---
 
-## BUILDING:
+## BUILDING
 
-#### Using CMake:
+**Recommended:** CMake >= 3.20, GCC or Clang (C23 support).
+
+### Linux/macOS
 
 ```sh
-# Release
-cmake -B build -S . \
-    -DCMAKE_BUILD_TYPE=Release
-make --directory build
-
-# Debug
-cmake -B build-debug -S . \
-    -DCMAKE_BUILD_TYPE=Debug
-make --directory build-debug
-
-# Run with debugging
+cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+./build/todos
+```
+For debugging:
+```sh
+cmake -B build-debug -S . -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-debug
 gdb build-debug/todos
-
-# Analyze memory leak
-valgrind --leak-check=full --show-leak-kinds=all build-debug/todos
 ```
 
-#### Using CMake for Windows
+### Windows (cross-compilation via MinGW)
 
 ```sh
-# Release
-cmake -B build-release-windows -S . \
-    -DCMAKE_TOOLCHAIN_FILE=toolchain-mingw.cmake \
-    -DCMAKE_BUILD_TYPE=Release
-cmake --build build-release-windows
-
-# Debug
-cmake -B build-debug-windows -S . \
-    -DCMAKE_TOOLCHAIN_FILE=toolchain-mingw.cmake \
-    -DCMAKE_BUILD_TYPE=Debug
-cmake --build build-debug-windows
+cmake -B build-win -S . -DCMAKE_TOOLCHAIN_FILE=toolchain-mingw.cmake
+cmake --build build-win
 ```
 
-#### Direct compilation with clang:
+### Quick build without CMake
 
 ```sh
-# Release
-clang -O3 -DNDEBUG -Iinclude src/*.c -o todos_release
-
-# Debug
-clang -g -O0 -Iinclude src/*.c -o todos_debug
-
-# Run with debugging
-gdb todos_debug
-
-# Analyze memory leak
-clang -g -O1 -fsanitize=address -fno-omit-frame-pointer -Iinclude src/*.c -o todos_asan
-./todos_asan
+clang -O2 -Iinclude src/*.c -o todos
+# or
+gcc -O2 -Iinclude src/*.c -o todos
 ```
 
-#### Using dockcross
+---
 
-```sh
-docker run --rm dockcross/linux-x64 > ./dockcross
-chmod +x ./dockcross
+## USAGE
 
-./dockcross cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Windows
-./dockcross cmake --build build --config Release
-```
+1. Run the program
+2. Follow the menu:
+    - Add todo
+    - Toggle todo status
+    - Edit title
+    - Delete todo
+    - Save todos
+    - Load todos
+    - Exit
 
-## USAGE:
+Tasks are saved in the `id;title;done` format in a text file.
 
-1. Run the program:
+---
 
-```sh
-./todos
-```
+## TECHNICAL DETAILS
 
-2. Menu options:
-
-- Add task
-- Toggle task status
-- Delete task
-- Save to file
-- Load from file
-- Exit
-
-## TECHNICAL DETAILS:
-
-- Tasks stored in id;title;done format
+- Tasks stored in `id;title;done` format
 - Unique task IDs (non-repeating after deletion)
 - C23 compatible code
 
-## REQUIREMENTS:
+---
+
+## REQUIREMENTS
 
 - C compiler (clang/gcc)
 - CMake (optional)
+- Valgrind/AddressSanitizer for memory analysis (optional)
+
+---
+
+## DEBUGGING
+
+### 1. Step-by-Step Debugging with GDB
+
+Start the program with GDB:
+
+```sh
+gdb build-debug/todos
+# or
+gdb todos_debug
+```
+
+Typical GDB workflow:
+- `break main` — Set a breakpoint at main().
+- `run` — Start the program.
+- `next` / `step` — Step through code line by line.
+- `print variable` — Inspect variable values.
+- `backtrace` — View the call stack on crash.
+
+**Counterpoint:** If you’re not using GDB, you risk missing subtle bugs, especially in pointer logic and memory handling.
+
+### 3. Memory Leak and Undefined Behavior Detection
+
+- Memory leak check:
+    ```sh
+    valgrind --leak-check=full --show-leak-kinds=all build-debug/todos
+    ```
+- Run with AddressSanitizer:
+    ```sh
+    clang -g -O1 -fsanitize=address -fno-omit-frame-pointer -Iinclude src/*.c -o todos_asan
+    ./todos_asan
+    ```
+
+---
+
+## LIMITATIONS & CRITICAL VIEW
+
+- **No search, sort, categories, or deadlines:** Only basic task management is supported. This limits practical applicability for complex workflows.
+- **No unit tests or CI/CD:** Memory leaks and regressions are possible. Consider integrating tests and automation for better maintainability.
+- **No localization or extended UI:** Only a basic English text menu is supported.
+- **No concurrency or multi-user support:** Only single-user, single-process operation.
+
+**Counterpoint:**
+While these limitations keep the codebase simple and educational, they restrict real-world scalability and collaboration. For practical adoption, future work should address these areas.
+
+---
+
+## FUTURE IMPROVEMENTS
+
+- Add modular/unit tests (e.g., with CMocka)
+- Implement export/import in CSV, JSON, or other formats
+- Support for task search, sort, and filter
+- Add task categories, deadlines, and priorities
+- Multi-user and/or client-server support
+- Internationalization/localization
+- Refactor menu to be dynamically generated from code to avoid documentation drift
+
+---
+
+## LICENSE
+
+MIT (or clarify as needed).
+
+---
+
+> **Critical Note:**
+> The project is intentionally minimalist and educational, but its current state limits practical use and long-term maintainability. Prioritizing testing, extensibility, and user experience will be essential for future development.
