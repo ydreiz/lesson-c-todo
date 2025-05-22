@@ -16,17 +16,18 @@ A simple console-based TODO list written in C.
 ## PROJECT STRUCTURE:
 
 ```sh
-todo_project/
-├── include/
-│   └── todo.h          # Structure definitions and function prototypes
-│   └── ui.h            # Structure definitions and function prototypes
-├── src/
-│   ├── main.c          # Entry point, menu logic
-│   ├── todo.c          # Task management
-│   ├── file.c          # File operations
-│   └── ui.c            # User interface
-├── Makefile            # Build configuration
-└── todos.txt           # Task storage (created on startup)
+ lesson-c-todo
+ ├── include
+ │   ├── todo.h               # Header file defining the Todo data structure and related declarations
+ │   └── ui.h                 # Header file declaring UI-related functions (menus, input, output)
+ ├── src
+ │   ├── file.c               # Source file handling file operations (loading, saving todos)
+ │   ├── main.c               # Main program entry point and application logic
+ │   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
+ │   └── ui.c                 # Source file implementing user interface functions
+ ├── CMakeLists.txt           # CMake build configuration file
+ ├── README.md                # Project documentation and overview
+ └── toolchain-mingw.cmake    # CMake toolchain file for cross-compiling to Windows using MinGW-w64
 ```
 
 ---
