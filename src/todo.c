@@ -1,8 +1,9 @@
-#include "todo.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "todo.h"
 
 void clear_stdin(void) {
   int c;
@@ -71,7 +72,7 @@ int add_todo(Todo **todos, int count, size_t *gloab_id, size_t *capacity) {
   return count + 1;
 }
 
-bool delete_todo(Todo todos[], int *count, unsigned int id) {
+bool delete_todo(Todo todos[], int *count, size_t id) {
   int pos = -1;
   for (int i = 0; i < *count; i++) {
     if (todos[i].id == id) {
@@ -91,7 +92,7 @@ bool delete_todo(Todo todos[], int *count, unsigned int id) {
   return true;
 }
 
-bool toggle_todo_status(Todo todos[], int count, unsigned int id) {
+bool toggle_todo_status(Todo todos[], int count, size_t id) {
   for (int i = 0; i < count; i++) {
     if (todos[i].id == id) {
       todos[i].done = !todos[i].done;
@@ -101,7 +102,7 @@ bool toggle_todo_status(Todo todos[], int count, unsigned int id) {
   return false;
 }
 
-bool edit_todo_title(Todo todos[], int count, unsigned int id) {
+bool edit_todo_title(Todo todos[], int count, size_t id) {
   int pos = -1;
   for (int i = 0; i < count; i++) {
     if (id == todos[i].id) {

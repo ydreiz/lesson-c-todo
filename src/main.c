@@ -1,8 +1,9 @@
-#include "todo.h"
-#include "ui.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "todo.h"
+#include "ui.h"
 
 size_t global_id = 0;
 const size_t initial_capacity = 3;
@@ -16,7 +17,7 @@ int main(void) {
   }
   int count = 0;
 
-  count = load_todos("todos.txt", &todos, &capacity);
+  count = load_todos(TODO_PATH, &todos, &capacity);
 
   for (int i = 0; i < count; i++) {
     if (todos[i].id > global_id)
@@ -34,41 +35,41 @@ int main(void) {
       count = add_todo(&todos, count, &global_id, &capacity);
       break;
     case 2: {
-      unsigned int id;
+      size_t id;
       printf("Enter todo ID to toggle status: ");
-      if (scanf("%u", &id) == 1) {
+      if (scanf("%lu", &id) == 1) {
         toggle_todo_status(todos, count, id);
         clear_stdin();
       }
       break;
     }
     case 3: {
-      unsigned int id;
+      size_t id;
       printf("Enter todo ID to edit title: ");
-      if (scanf("%u", &id) == 1) {
+      if (scanf("%lu", &id) == 1) {
         clear_stdin();
         edit_todo_title(todos, count, id);
       }
       break;
     }
     case 4: {
-      unsigned int id;
+      size_t id;
       printf("Enter todo ID to delete: ");
-      if (scanf("%u", &id) == 1) {
+      if (scanf("%lu", &id) == 1) {
         delete_todo(todos, &count, id);
         clear_stdin();
       }
       break;
     }
     case 5:
-      if (save_todos("todos.txt", todos, count)) {
+      if (save_todos(TODO_PATH, todos, count)) {
         printf("Todos saved successfully.\n");
       } else {
         printf("Error saving todos.\n");
       }
       break;
     case 6:
-      count = load_todos("todos.txt", &todos, &capacity);
+      count = load_todos(TODO_PATH, &todos, &capacity);
       printf("Todos loaded.\n");
       break;
     case 0:

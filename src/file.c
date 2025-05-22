@@ -1,8 +1,9 @@
-#include "todo.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "todo.h"
 
 bool save_todos(const char *filename, const Todo todos[], size_t count) {
   FILE *fp = fopen(filename, "w");

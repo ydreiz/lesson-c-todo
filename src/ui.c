@@ -1,6 +1,7 @@
-#include "ui.h"
-#include "todo.h"
 #include <stdio.h>
+
+#include "todo.h"
+#include "ui.h"
 
 void print_menu(void) {
   printf("\nMenu:\n");

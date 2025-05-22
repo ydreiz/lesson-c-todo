@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#define TODO_PATH "todos.txt"
 #define TITLE_SIZE 100
 
 typedef struct {
@@ -13,9 +14,9 @@ typedef struct {
 } Todo;
 
 int add_todo(Todo **todos, int count, size_t *gloabl_id, size_t *capacity);
-bool delete_todo(Todo todos[], int *count, unsigned int id);
-bool toggle_todo_status(Todo todos[], int count, unsigned int id);
-bool edit_todo_title(Todo todos[], int count, unsigned int id);
+bool delete_todo(Todo todos[], int *count, size_t id);
+bool toggle_todo_status(Todo todos[], int count, size_t id);
+bool edit_todo_title(Todo todos[], int count, size_t id);
 void print_todos(const Todo todos[], int count);
 
 void clear_stdin(void);
