@@ -1,15 +1,22 @@
 #include "todo.h"
 #include "ui.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-unsigned int global_id = 0;
+size_t global_id = 0;
+const size_t initial_capacity = 3;
+size_t capacity = initial_capacity;
 
 int main(void) {
-  Todo todos[MAX_TODOS];
+  Todo *todos = malloc(initial_capacity * sizeof(Todo));
+  if (!todos) {
+    fprintf(stderr, "Failed to allocate memory for todos\n");
+    return EXIT_FAILURE;
+  }
   int count = 0;
 
-  count = load_todos("todos.txt", todos, MAX_TODOS);
+  count = load_todos("todos.txt", &todos, &capacity);
 
   for (int i = 0; i < count; i++) {
     if (todos[i].id > global_id)
@@ -24,7 +31,7 @@ int main(void) {
     int choice = get_choice();
     switch (choice) {
     case 1:
-      count = add_todo(todos, MAX_TODOS, count, &global_id);
+      count = add_todo(&todos, count, &global_id, &capacity);
       break;
     case 2: {
       unsigned int id;
@@ -61,7 +68,7 @@ int main(void) {
       }
       break;
     case 6:
-      count = load_todos("todos.txt", todos, MAX_TODOS);
+      count = load_todos("todos.txt", &todos, &capacity);
       printf("Todos loaded.\n");
       break;
     case 0:
@@ -72,6 +79,8 @@ int main(void) {
       break;
     }
   }
+
+  free(todos);
 
   return EXIT_SUCCESS;
 }

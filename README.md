@@ -36,23 +36,54 @@ todo_project/
 #### Using CMake:
 
 ```sh
-mkdir build && cd build
-cmake ..
-make
+# Release
+cmake -B build -S . \
+    -DCMAKE_BUILD_TYPE=Release
+make --directory build
+
+# Debug
+cmake -B build-debug -S . \
+    -DCMAKE_BUILD_TYPE=Debug
+make --directory build-debug
+
+# Run with debugging
+gdb build-debug/todos
+
+# Analyze memory leak
+valgrind --leak-check=full --show-leak-kinds=all build-debug/todos
 ```
 
 #### Using CMake for Windows
 
 ```sh
-mkdir build-win && cd build-win
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw.cmake
-cmake --build .
+# Release
+cmake -B build-release-windows -S . \
+    -DCMAKE_TOOLCHAIN_FILE=toolchain-mingw.cmake \
+    -DCMAKE_BUILD_TYPE=Release
+cmake --build build-release-windows
+
+# Debug
+cmake -B build-debug-windows -S . \
+    -DCMAKE_TOOLCHAIN_FILE=toolchain-mingw.cmake \
+    -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-debug-windows
 ```
 
 #### Direct compilation with clang:
 
 ```sh
-clang -Iinclude src/*.c -o todos
+# Release
+clang -O3 -DNDEBUG -Iinclude src/*.c -o todos_release
+
+# Debug
+clang -g -O0 -Iinclude src/*.c -o todos_debug
+
+# Run with debugging
+gdb todos_debug
+
+# Analyze memory leak
+clang -g -O1 -fsanitize=address -fno-omit-frame-pointer -Iinclude src/*.c -o todos_asan
+./todos_asan
 ```
 
 #### Using dockcross

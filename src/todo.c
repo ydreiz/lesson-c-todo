@@ -1,5 +1,7 @@
 #include "todo.h"
+#include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 void clear_stdin(void) {
@@ -43,12 +45,7 @@ bool input_status() {
   } while (true);
 }
 
-int add_todo(Todo todos[], int capacity, int count, unsigned int *gloab_id) {
-  if (capacity == count) {
-    printf("Todos list overflow, before add new todo, remove some todo!\n");
-    return count;
-  }
-
+int add_todo(Todo **todos, int count, size_t *gloab_id, size_t *capacity) {
   char title[TITLE_SIZE];
   if (!input_title(title, sizeof(title), "New todo title")) {
     return count;
@@ -59,7 +56,18 @@ int add_todo(Todo todos[], int capacity, int count, unsigned int *gloab_id) {
   todo.id = ++(*gloab_id);
   strcpy(todo.title, title);
 
-  todos[count] = todo;
+  if (count == *capacity) {
+    *capacity *= 2;
+    Todo *tmp = realloc(*todos, *capacity * sizeof(Todo));
+    if (!tmp) {
+      fprintf(stderr, "An error occurred while allocating "
+                      "memory for the todo list\n");
+      return count;
+    }
+    *todos = tmp;
+  }
+
+  (*todos)[count] = todo;
   return count + 1;
 }
 
@@ -122,11 +130,11 @@ void print_todos(const Todo todos[], int count) {
   for (int i = 0; i < count; i++) {
     Todo todo = todos[i];
     if (count < 10) {
-      printf("[%d] %-50s %s\n", todo.id, todo.title, status_str(todo.done));
+      printf("[%lu] %-50s %s\n", todo.id, todo.title, status_str(todo.done));
     } else if (count >= 100) {
-      printf("[%3d] %-48s %s\n", todo.id, todo.title, status_str(todo.done));
+      printf("[%3lu] %-48s %s\n", todo.id, todo.title, status_str(todo.done));
     } else {
-      printf("[%2d] %-49s %s\n", todo.id, todo.title, status_str(todo.done));
+      printf("[%2lu] %-49s %s\n", todo.id, todo.title, status_str(todo.done));
     }
   }
   printf("Total todos: %d\n", count);

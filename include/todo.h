@@ -2,17 +2,17 @@
 #define TODO_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #define TITLE_SIZE 100
-#define MAX_TODOS 10
 
 typedef struct {
-  unsigned int id;
+  size_t id;
   char title[TITLE_SIZE];
   bool done;
 } Todo;
 
-int add_todo(Todo todos[], int capacity, int count, unsigned int *gloabl_id);
+int add_todo(Todo **todos, int count, size_t *gloabl_id, size_t *capacity);
 bool delete_todo(Todo todos[], int *count, unsigned int id);
 bool toggle_todo_status(Todo todos[], int count, unsigned int id);
 bool edit_todo_title(Todo todos[], int count, unsigned int id);
@@ -23,7 +23,7 @@ const char *status_str(bool done);
 bool input_title(char *buf, int size, const char *prompt);
 bool input_status(void);
 
-bool save_todos(const char *filename, Todo todos[], int count);
-int load_todos(const char *filename, Todo todos[], int capacity);
+bool save_todos(const char *filename, const Todo todos[], size_t count);
+int load_todos(const char *filename, Todo **todos, size_t *capacity);
 
 #endif // !TODO_H

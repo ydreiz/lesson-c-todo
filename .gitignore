@@ -52,8 +52,10 @@ Mkfile.old
 dkms.conf
 
 .cache/
-build/
-build-win/
+build*/
 bin/
 obj/
 todos.txt
+todos_debug
+todos_release
+todos_asan
