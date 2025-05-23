@@ -25,8 +25,6 @@ int main(void) {
     return EXIT_FAILURE;
   } else if (result == TODO_ERR_FILE) {
     print_error("Unable to open file.");
-    free(todos);
-    return EXIT_FAILURE;
   }
 
   for (int i = 0; i < count; i++) {
