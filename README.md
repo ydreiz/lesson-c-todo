@@ -4,7 +4,7 @@
 
 ## DESCRIPTION
 
-This is an educational project — a console TODO list written in C (C23), supporting basic task management operations: adding, toggling status, deleting, saving, and loading from a file.
+This is an educational project — a console TODO list written in C (C23), supporting basic todo management operations: adding, toggling status, deleting, saving, and loading from a file.
 
 **Why C?**
 - Minimal dependencies, maximum memory control.
@@ -14,12 +14,12 @@ This is an educational project — a console TODO list written in C (C23), suppo
 
 ## FEATURES
 
-- [x] Add tasks with a title, completion status, and unique ID
-- [x] Toggle task status (done/not done)
-- [x] Delete tasks by ID
-- [x] Save task list to `todos.txt` and load on startup
+- [x] Add todo with a title, completion status, and unique ID
+- [x] Toggle todo status (done/not done)
+- [x] Delete todos by ID
+- [x] Save todo list to `todos.txt` and load on startup
 - [x] Simple text menu interface
-- [ ] No support for subtasks, categories, or deadlines — intentionally omitted for focus on the basics
+- [ ] No support for subtodo, categories, or deadlines — intentionally omitted for focus on the basics
 
 ---
 
@@ -89,14 +89,14 @@ gcc -O2 -Iinclude src/*.c -o todos
     - Load todos
     - Exit
 
-Tasks are saved in the `id;title;done` format in a text file.
+Todos are saved in the `id;title;done` format in a text file.
 
 ---
 
 ## TECHNICAL DETAILS
 
-- Tasks stored in `id;title;done` format
-- Unique task IDs (non-repeating after deletion)
+- Todos stored in `id;title;done` format
+- Unique todo IDs (non-repeating after deletion)
 - C23 compatible code
 
 ---
@@ -146,7 +146,7 @@ Typical GDB workflow:
 
 ## LIMITATIONS & CRITICAL VIEW
 
-- **No search, sort, categories, or deadlines:** Only basic task management is supported. This limits practical applicability for complex workflows.
+- **No search, sort, categories, or deadlines:** Only basic todo management is supported. This limits practical applicability for complex workflows.
 - **No unit tests or CI/CD:** Memory leaks and regressions are possible. Consider integrating tests and automation for better maintainability.
 - **No localization or extended UI:** Only a basic English text menu is supported.
 - **No concurrency or multi-user support:** Only single-user, single-process operation.
@@ -160,8 +160,8 @@ While these limitations keep the codebase simple and educational, they restrict 
 
 - Add modular/unit tests (e.g., with CMocka)
 - Implement export/import in CSV, JSON, or other formats
-- Support for task search, sort, and filter
-- Add task categories, deadlines, and priorities
+- Support for todo search, sort, and filter
+- Add todo categories, deadlines, and priorities
 - Multi-user and/or client-server support
 - Internationalization/localization
 - Refactor menu to be dynamically generated from code to avoid documentation drift
