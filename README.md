@@ -19,6 +19,7 @@ This is an educational project — a console TODO list written in C (C23), suppo
 - [x] Delete todos by ID
 - [x] Save todo list to `todos.txt` and load on startup
 - [x] Simple text menu interface
+- [x] Minimalistic, framework-free test runner for core logic (see TESTING below)
 - [ ] No support for subtodo, categories, or deadlines — intentionally omitted for focus on the basics
 
 ---
@@ -29,12 +30,18 @@ This is an educational project — a console TODO list written in C (C23), suppo
 lesson-c-todo
 ├── include
 │   ├── todo.h               # Header file defining the Todo data structure and related declarations
-│   └── ui.h                 # Header file declaring UI-related functions (menus, input, output)
+│   ├── ui.h                 # Header file declaring UI-related functions (menus, input, output)
+│   └── test.h               # Header file declaring test-related functions
 ├── src
 │   ├── file.c               # Source file handling file operations (loading, saving todos)
 │   ├── main.c               # Main program entry point and application logic
 │   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
+│   ├── tets.c               # Test program entry point and application logic
 │   └── ui.c                 # Source file implementing user interface functions
+├── tests
+│   ├── test_todo.c          # Manual tests, entry point is main()
+│   └── ...                  # Additional test files
+├── Makefile                 # Build and test automation
 ├── CMakeLists.txt           # CMake build configuration file
 ├── README.md                # Project documentation and overview
 └── toolchain-mingw.cmake    # CMake toolchain file for cross-compiling to Windows using MinGW-w64
@@ -75,6 +82,22 @@ clang -O2 -Iinclude src/*.c -o todos
 gcc -O2 -Iinclude src/*.c -o todos
 ```
 
+### Build and run tests
+
+```sh
+make
+make test
+```
+
+> The test runner is framework-free and simply returns a nonzero exit code on failure.
+> You can inspect or expand tests in the `tests/` directory.
+
+### Clean build artifacts test
+
+```sh
+make clean
+```
+
 ---
 
 ## USAGE
@@ -105,6 +128,7 @@ Todos are saved in the `id;title;done` format in a text file.
 
 - C compiler (clang/gcc)
 - CMake (optional)
+- make
 - Valgrind/AddressSanitizer for memory analysis (optional)
 
 ---
@@ -144,21 +168,39 @@ Typical GDB workflow:
 
 ---
 
+## TESTING
+
+- Tests are implemented manually, without any external frameworks.
+- The test entry point is `tests/test_todo.c` (and others), with a main() function invoking various test routines.
+- Test runner returns a nonzero exit code if any test fails.
+- Run tests via `make test`.
+- Tests cover basic logic: creation, toggling, deletion, file I/O, and some edge cases.
+
+**Critical perspective:**
+This approach is simple and transparent, but not scalable. There is no automatic test discovery, failure reporting, or CI integration. As the project grows, maintaining custom runners becomes error-prone and inefficient.
+For robust projects, a lightweight C test framework (e.g., CMocka, Check, Unity) is strongly recommended, along with automated CI/CD and coverage reporting.
+
+**Alternative:**
+If future maintainability or collaboration is a goal, consider migrating to a real test framework. This would make tests easier to write, run, and automate — and would unlock integration with modern tooling.
+
+---
+
 ## LIMITATIONS & CRITICAL VIEW
 
 - **No search, sort, categories, or deadlines:** Only basic todo management is supported. This limits practical applicability for complex workflows.
-- **No unit tests or CI/CD:** Memory leaks and regressions are possible. Consider integrating tests and automation for better maintainability.
+- **Manual, minimal test suite:** Testing is limited and not automated; coverage is likely incomplete, and CI/CD is absent.
 - **No localization or extended UI:** Only a basic English text menu is supported.
 - **No concurrency or multi-user support:** Only single-user, single-process operation.
 
 **Counterpoint:**
-While these limitations keep the codebase simple and educational, they restrict real-world scalability and collaboration. For practical adoption, future work should address these areas.
+These constraints keep the codebase simple and educational, but also make it difficult to scale, maintain, or adapt to real-world use cases. For anything beyond a learning project, addressing these issues will become essential.
 
 ---
 
 ## FUTURE IMPROVEMENTS
 
 - Add modular/unit tests (e.g., with CMocka)
+
 - Implement export/import in CSV, JSON, or other formats
 - Support for todo search, sort, and filter
 - Add todo categories, deadlines, and priorities
