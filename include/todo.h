@@ -7,24 +7,40 @@
 #define TODO_PATH "todos.txt"
 #define TITLE_SIZE 100
 
+typedef enum {
+  TODO_OK = 0,
+
+  TODO_CHOSE_AGREE = 101,
+  TODO_CHOSE_REJECT = 102,
+
+  TODO_ERR_ALLOC = 201,
+  TODO_ERR_FILE = 202,
+  TODO_ERR_NOT_FOUND = 203,
+  TODO_ERR_INVALID_INPUT = 204,
+  TODO_ERR_EMPTY_INPUT = 205,
+} TodoResult;
+
 typedef struct {
   size_t id;
   char title[TITLE_SIZE];
   bool done;
 } Todo;
 
-int add_todo(Todo **todos, int count, size_t *gloabl_id, size_t *capacity);
-bool delete_todo(Todo todos[], int *count, size_t id);
-bool toggle_todo_status(Todo todos[], int count, size_t id);
-bool edit_todo_title(Todo todos[], int count, size_t id);
-void print_todos(const Todo todos[], int count);
+TodoResult add_todo(Todo **todos, size_t *count, size_t *gloabl_id,
+                    size_t *capacity);
+TodoResult delete_todo(Todo todos[], size_t *count, size_t id);
+TodoResult toggle_todo_status(Todo todos[], size_t count, size_t id);
+TodoResult edit_todo_title(Todo todos[], size_t count, size_t id);
+void print_todos(const Todo todos[], size_t count);
 
-void clear_stdin(void);
+TodoResult input_title(char *buf, int size, const char *prompt);
+TodoResult input_status(void);
+
+TodoResult save_todos(const char *filename, const Todo todos[], size_t *count);
+TodoResult load_todos(const char *filename, Todo **todos, size_t *capacity,
+                      size_t *count);
+
 const char *status_str(bool done);
-bool input_title(char *buf, int size, const char *prompt);
-bool input_status(void);
-
-bool save_todos(const char *filename, const Todo todos[], size_t count);
-int load_todos(const char *filename, Todo **todos, size_t *capacity);
+void clear_stdin(void);
 
 #endif // !TODO_H

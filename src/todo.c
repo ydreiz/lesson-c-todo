@@ -13,24 +13,22 @@ void clear_stdin(void) {
 
 const char *status_str(bool ch) { return ch ? "[x]" : "[ ]"; }
 
-bool input_title(char *buf, int size, const char *prompt) {
+TodoResult input_title(char *buf, int size, const char *prompt) {
   printf("%s: ", prompt);
   if (fgets(buf, size, stdin) == NULL) {
-    printf("Error when enter title!\n");
-    return false;
+    return TODO_ERR_INVALID_INPUT;
   }
   buf[strcspn(buf, "\n")] = '\0';
 
-  return strlen(buf) > 0;
+  return strlen(buf) > 0 ? TODO_OK : TODO_ERR_EMPTY_INPUT;
 }
 
-bool input_status() {
+TodoResult input_status() {
   char ch[2];
   do {
     printf("Status is done [y/n] (Default: n): ");
     if (fgets(ch, sizeof(ch), stdin) == NULL) {
-      printf("Error when read status!\n");
-      return false;
+      return TODO_ERR_INVALID_INPUT;
     }
     ch[strcspn(ch, "\n")] = '\0';
 
@@ -41,38 +39,43 @@ bool input_status() {
     }
 
     if (strcmp(ch, "y") || strcmp(ch, "n")) {
-      return strcmp(ch, "y") == 0;
+      return strcmp(ch, "y") == 0 ? TODO_CHOSE_AGREE : TODO_CHOSE_REJECT;
     }
   } while (true);
 }
 
-int add_todo(Todo **todos, int count, size_t *gloab_id, size_t *capacity) {
+TodoResult add_todo(Todo **todos, size_t *count, size_t *global_id,
+                    size_t *capacity) {
   char title[TITLE_SIZE];
-  if (!input_title(title, sizeof(title), "New todo title")) {
-    return count;
+  TodoResult result = input_title(title, sizeof(title), "New todo title");
+  if (result == TODO_ERR_INVALID_INPUT) {
+    return TODO_ERR_INVALID_INPUT;
+  }
+  if (result == TODO_ERR_EMPTY_INPUT) {
+    return TODO_ERR_EMPTY_INPUT;
   }
 
   Todo todo;
   todo.done = input_status();
-  todo.id = ++(*gloab_id);
+  todo.id = ++(*global_id);
   strcpy(todo.title, title);
 
-  if (count == *capacity) {
+  if (*count == *capacity) {
     *capacity *= 2;
     Todo *tmp = realloc(*todos, *capacity * sizeof(Todo));
     if (!tmp) {
-      fprintf(stderr, "An error occurred while allocating "
-                      "memory for the todo list\n");
-      return count;
+      return TODO_ERR_ALLOC;
     }
     *todos = tmp;
   }
+  (*todos)[*count] = todo;
 
-  (*todos)[count] = todo;
-  return count + 1;
+  (*count)++;
+
+  return TODO_OK;
 }
 
-bool delete_todo(Todo todos[], int *count, size_t id) {
+TodoResult delete_todo(Todo todos[], size_t *count, size_t id) {
   int pos = -1;
   for (int i = 0; i < *count; i++) {
     if (todos[i].id == id) {
@@ -82,27 +85,29 @@ bool delete_todo(Todo todos[], int *count, size_t id) {
   }
 
   if (pos == -1) {
-    return false;
+    return TODO_ERR_NOT_FOUND;
   }
 
   for (int i = pos; i < *count - 1; i++) {
     todos[i] = todos[i + 1];
   }
+
   (*count)--;
-  return true;
+
+  return TODO_OK;
 }
 
-bool toggle_todo_status(Todo todos[], int count, size_t id) {
+TodoResult toggle_todo_status(Todo todos[], size_t count, size_t id) {
   for (int i = 0; i < count; i++) {
     if (todos[i].id == id) {
       todos[i].done = !todos[i].done;
-      return true;
+      return TODO_OK;
     }
   }
-  return false;
+  return TODO_ERR_NOT_FOUND;
 }
 
-bool edit_todo_title(Todo todos[], int count, size_t id) {
+TodoResult edit_todo_title(Todo todos[], size_t count, size_t id) {
   int pos = -1;
   for (int i = 0; i < count; i++) {
     if (id == todos[i].id) {
@@ -112,22 +117,25 @@ bool edit_todo_title(Todo todos[], int count, size_t id) {
   }
 
   if (pos == -1) {
-    fprintf(stderr, "Todo with ID %d not found!\n", id);
-    return false;
+    return TODO_ERR_NOT_FOUND;
   }
 
   char title[TITLE_SIZE];
-  if (!input_title(title, sizeof(title), "Enter new title")) {
-    printf("The title has not been changed because"
-           " you have not entered a new one.\n");
-    return false;
+  TodoResult result;
+  result = input_title(title, sizeof(title), "New todo title");
+  if (result == TODO_ERR_INVALID_INPUT) {
+    return TODO_ERR_INVALID_INPUT;
   }
+  if (result == TODO_ERR_EMPTY_INPUT) {
+    return TODO_ERR_EMPTY_INPUT;
+  }
+
   strcpy(todos[pos].title, title);
-  printf("The headline has been successfully changed!\n");
-  return true;
+
+  return TODO_OK;
 }
 
-void print_todos(const Todo todos[], int count) {
+void print_todos(const Todo todos[], size_t count) {
   for (int i = 0; i < count; i++) {
     Todo todo = todos[i];
     if (count < 10) {
@@ -138,5 +146,5 @@ void print_todos(const Todo todos[], int count) {
       printf("[%2lu] %-49s %s\n", todo.id, todo.title, status_str(todo.done));
     }
   }
-  printf("Total todos: %d\n", count);
+  printf("Total todos: %lu\n", count);
 }
