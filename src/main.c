@@ -22,7 +22,7 @@ int main(void) {
   result = load_todos(TODO_PATH, &todos, &capacity, &count);
   if (result == TODO_ERR_ALLOC) {
     print_error("Unable to allocate required memory. Operation aborted.");
-    return EXIT_FAILURE;
+    exit(EXIT_FAILURE);
   } else if (result == TODO_ERR_FILE) {
     print_error("Unable to open file.");
   }
@@ -105,13 +105,19 @@ int main(void) {
 
     if (result == TODO_ERR_ALLOC) {
       print_error("Unable to allocate required memory. Operation aborted.");
-      break;
+      exit(EXIT_FAILURE);
     } else if (result == TODO_ERR_INVALID_INPUT) {
       print_error("Text input error. Please try again.");
     } else if (result == TODO_ERR_NOT_FOUND) {
       print_error("Todo could not be found.");
     } else if (result == TODO_ERR_FILE) {
       print_error("Unable to open file.");
+    } else if (result == TODO_ERR_FILE_WRITE) {
+      print_error("Unable to write to file.");
+    } else if (result == TODO_ERR_FILE_READ) {
+      print_error("Unable to read from file.");
+    } else if (result == TODO_ERR_FILE_CLOSE) {
+      print_error("Unable to close file.");
     }
   }
 

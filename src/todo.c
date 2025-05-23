@@ -17,7 +17,10 @@ TodoResult input_title(char *buf, int size, const char *prompt) {
   printf("%s: ", prompt);
   if (fgets(buf, size, stdin) == NULL) {
     return TODO_ERR_INVALID_INPUT;
+  } else if (ferror(stdin)) {
+    return TODO_ERR_INVALID_INPUT;
   }
+
   buf[strcspn(buf, "\n")] = '\0';
 
   return strlen(buf) > 0 ? TODO_OK : TODO_ERR_EMPTY_INPUT;
@@ -28,6 +31,8 @@ TodoResult input_status() {
   do {
     printf("Status is done [y/n] (Default: n): ");
     if (fgets(ch, sizeof(ch), stdin) == NULL) {
+      return TODO_ERR_INVALID_INPUT;
+    } else if (ferror(stdin)) {
       return TODO_ERR_INVALID_INPUT;
     }
     ch[strcspn(ch, "\n")] = '\0';

@@ -12,10 +12,24 @@ TodoResult save_todos(const char *filename, const Todo todos[], size_t *count) {
   }
 
   for (int i = 0; i < *count; i++) {
-    fprintf(fp, "%lu;%s;%d\n", todos[i].id, todos[i].title,
-            todos[i].done ? 1 : 0);
+    int result = fprintf(fp, "%lu;%s;%d\n", todos[i].id, todos[i].title,
+                         todos[i].done ? 1 : 0);
+    if (result < 0) {
+      if (ferror(fp)) {
+        fclose(fp);
+
+        return TODO_ERR_FILE_WRITE;
+      }
+
+      fclose(fp);
+
+      return TODO_ERR_FILE_WRITE;
+    }
   }
-  fclose(fp);
+
+  if (fclose(fp) != 0) {
+    return TODO_ERR_FILE_CLOSE;
+  }
 
   return TODO_OK;
 }
@@ -51,7 +65,13 @@ TodoResult load_todos(const char *filename, Todo **todos, size_t *capacity,
       (*count)++;
     }
   }
-  fclose(fp);
+
+  if (ferror(fp)) {
+    fclose(fp);
+    return TODO_ERR_FILE_READ;
+  } else if (fclose(fp) != 0) {
+    return TODO_ERR_FILE_CLOSE;
+  }
 
   return TODO_OK;
 }
