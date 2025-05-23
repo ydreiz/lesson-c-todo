@@ -27,7 +27,7 @@ int main(void) {
     print_error("Unable to open file.");
   }
 
-  for (int i = 0; i < count; i++) {
+  for (size_t i = 0; i < count; i++) {
     if (todos[i].id > global_id)
       global_id = todos[i].id;
   }

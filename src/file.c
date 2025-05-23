@@ -11,7 +11,7 @@ TodoResult save_todos(const char *filename, const Todo todos[], size_t *count) {
     return TODO_ERR_FILE;
   }
 
-  for (int i = 0; i < *count; i++) {
+  for (size_t i = 0; i < *count; i++) {
     int result = fprintf(fp, "%lu;%s;%d\n", todos[i].id, todos[i].title,
                          todos[i].done ? 1 : 0);
     if (result < 0) {

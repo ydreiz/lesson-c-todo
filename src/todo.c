@@ -82,7 +82,7 @@ TodoResult add_todo(Todo **todos, size_t *count, size_t *global_id,
 
 TodoResult delete_todo(Todo todos[], size_t *count, size_t id) {
   int pos = -1;
-  for (int i = 0; i < *count; i++) {
+  for (size_t i = 0; i < *count; i++) {
     if (todos[i].id == id) {
       pos = i;
       break;
@@ -93,7 +93,7 @@ TodoResult delete_todo(Todo todos[], size_t *count, size_t id) {
     return TODO_ERR_NOT_FOUND;
   }
 
-  for (int i = pos; i < *count - 1; i++) {
+  for (size_t i = pos; i < *count - 1; i++) {
     todos[i] = todos[i + 1];
   }
 
@@ -103,7 +103,7 @@ TodoResult delete_todo(Todo todos[], size_t *count, size_t id) {
 }
 
 TodoResult toggle_todo_status(Todo todos[], size_t count, size_t id) {
-  for (int i = 0; i < count; i++) {
+  for (size_t i = 0; i < count; i++) {
     if (todos[i].id == id) {
       todos[i].done = !todos[i].done;
       return TODO_OK;
@@ -114,7 +114,7 @@ TodoResult toggle_todo_status(Todo todos[], size_t count, size_t id) {
 
 TodoResult edit_todo_title(Todo todos[], size_t count, size_t id) {
   int pos = -1;
-  for (int i = 0; i < count; i++) {
+  for (size_t i = 0; i < count; i++) {
     if (id == todos[i].id) {
       pos = i;
       break;
@@ -141,7 +141,7 @@ TodoResult edit_todo_title(Todo todos[], size_t count, size_t id) {
 }
 
 void print_todos(const Todo todos[], size_t count) {
-  for (int i = 0; i < count; i++) {
+  for (size_t i = 0; i < count; i++) {
     Todo todo = todos[i];
     if (count < 10) {
       printf("[%lu] %-50s %s\n", todo.id, todo.title, status_str(todo.done));
