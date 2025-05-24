@@ -1,5 +1,6 @@
-#include "../include/test.h"
 #include <stdlib.h>
+
+#include "../include/test.h"
 
 bool test_add_todo_increases_count(void);
 bool test_add_todo_failure_realloc(void);
@@ -24,6 +25,16 @@ bool test_change_todo_title_null(void);
 
 bool test_save_and_load_todos(void);
 bool test_load_nonexistent_file(void);
+
+bool test_tui_input_text_successfuly(void);
+bool test_tui_input_text_empty(void);
+bool test_tui_input_text_eof(void);
+
+bool test_tui_input_number_successfuly(void);
+bool test_tui_input_number_invalid(void);
+bool test_tui_input_number_eof(void);
+
+bool test_tui_print_todos(void);
 
 int main(void)
 {
@@ -50,6 +61,16 @@ int main(void)
 
   run_test("Save and Load Todos", test_save_and_load_todos);
   run_test("Load Nonexistent File", test_load_nonexistent_file);
+
+  run_test("TUI Input Text Successfuly", test_tui_input_text_successfuly);
+  run_test("TUI Input Text Empty", test_tui_input_text_empty);
+  run_test("TUI Input Text EOF", test_tui_input_text_eof);
+
+  run_test("TUI Input Number Successfuly", test_tui_input_number_successfuly);
+  run_test("TUI Input Number Invalid", test_tui_input_number_invalid);
+  run_test("TUI Input Number EOF", test_tui_input_number_eof);
+
+  run_test("TUI Print Todos", test_tui_print_todos);
 
   return EXIT_SUCCESS;
 }

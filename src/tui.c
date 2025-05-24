@@ -19,6 +19,11 @@ void tui_print_menus(void)
 
 void tui_print_todos(const Todo todos[], size_t count)
 {
+  if (todos == NULL || count == 0)
+  {
+    return;
+  }
+
   for (size_t i = 0; i < count; i++)
   {
     Todo todo = todos[i];
