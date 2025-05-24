@@ -1,10 +1,14 @@
 #include "test.h"
 
-void run_test(const char *name, TestFunc test) {
+void run_test(const char *name, TestFunc test)
+{
   printf("Running test: %s... ", name);
-  if (test()) {
+  if (test())
+  {
     printf("PASSED\n");
-  } else {
+  }
+  else
+  {
     printf("FAILED\n");
   }
 }

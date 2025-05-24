@@ -4,7 +4,8 @@
 #include "todo.h"
 #include "tui.h"
 
-void tui_print_menus(void) {
+void tui_print_menus(void)
+{
   printf("\nMenu:\n");
   printf("1. Add todo\n");
   printf("2. Toggle todo status\n");
@@ -16,16 +17,23 @@ void tui_print_menus(void) {
   printf("Enter your choice: ");
 }
 
-void tui_print_todos(const Todo todos[], size_t count) {
-  for (size_t i = 0; i < count; i++) {
+void tui_print_todos(const Todo todos[], size_t count)
+{
+  for (size_t i = 0; i < count; i++)
+  {
     Todo todo = todos[i];
     char *status_str = todo.done ? "[x]" : "[ ]";
 
-    if (count < 10) {
+    if (count < 10)
+    {
       printf("[%lu] %-50s %s\n", todo.id, todo.title, status_str);
-    } else if (count >= 100) {
+    }
+    else if (count >= 100)
+    {
       printf("[%3lu] %-48s %s\n", todo.id, todo.title, status_str);
-    } else {
+    }
+    else
+    {
       printf("[%2lu] %-49s %s\n", todo.id, todo.title, status_str);
     }
   }
@@ -33,14 +41,19 @@ void tui_print_todos(const Todo todos[], size_t count) {
   printf("Total todos: %lu\n", count);
 }
 
-TuiResult tui_input_text(char *buf, int size, const char *prompt) {
-  if (prompt != NULL) {
+TuiResult tui_input_text(char *buf, int size, const char *prompt)
+{
+  if (prompt != NULL)
+  {
     printf("%s", prompt);
   }
 
-  if (fgets(buf, size, stdin) == NULL) {
+  if (fgets(buf, size, stdin) == NULL)
+  {
     return TUI_ERR_INVALID_INPUT;
-  } else if (ferror(stdin)) {
+  }
+  else if (ferror(stdin))
+  {
     return TUI_ERR_INVALID_INPUT;
   }
 
@@ -49,12 +62,15 @@ TuiResult tui_input_text(char *buf, int size, const char *prompt) {
   return strlen(buf) > 0 ? TUI_OK : TUI_ERR_EMPTY_INPUT;
 }
 
-TuiResult tui_input_number(size_t *choice, const char *prompt) {
-  if (prompt != NULL) {
+TuiResult tui_input_number(size_t *choice, const char *prompt)
+{
+  if (prompt != NULL)
+  {
     printf("%s", prompt);
   }
 
-  if (scanf("%lu", choice) != 1) {
+  if (scanf("%lu", choice) != 1)
+  {
     tui_normolized_stdin();
 
     return TUI_ERR_INVALID_INPUT;
@@ -65,7 +81,8 @@ TuiResult tui_input_number(size_t *choice, const char *prompt) {
   return TUI_OK;
 }
 
-void tui_normolized_stdin() {
+void tui_normolized_stdin()
+{
   int c;
   while ((c = getchar()) != '\n' && c != EOF)
     ;

@@ -13,7 +13,8 @@
 #define TUI_MENU_LOAD_TODOS 6
 #define TUI_MENU_EXIT 0
 
-typedef enum {
+typedef enum
+{
   TUI_NOTHING = -1,
   TUI_OK = 0,
   TUI_ERR_INVALID_INPUT = 101,

@@ -6,13 +6,15 @@
 
 #define TODO_FILE "todos.txt"
 
-typedef struct {
+typedef struct
+{
   size_t id;
   char title[100];
   bool done;
 } Todo;
 
-typedef enum {
+typedef enum
+{
   TODO_NOTHING = -1,
   TODO_OK = 0,
   TODO_ERR_ALLOC = 201,
@@ -23,8 +25,7 @@ typedef enum {
   TODO_ERR_INVALID_ARGUMENT = 501,
 } TodoResult;
 
-TodoResult todo_add(const char *title, bool status, Todo *todos[],
-                    size_t *count, size_t *global_id, size_t *capacity);
+TodoResult todo_add(const char *title, bool status, Todo *todos[], size_t *count, size_t *global_id, size_t *capacity);
 
 TodoResult todo_delete(Todo todos[], size_t *count, size_t pos);
 
@@ -36,7 +37,6 @@ TodoResult todo_find(const Todo todos[], size_t count, size_t id, size_t *pos);
 
 TodoResult todo_save(const char *filename, const Todo todos[], size_t count);
 
-TodoResult todo_load(const char *filename, Todo *todos[], size_t *capacity,
-                     size_t *count);
+TodoResult todo_load(const char *filename, Todo *todos[], size_t *capacity, size_t *count);
 
 #endif // !TODO_H
