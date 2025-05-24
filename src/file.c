@@ -5,37 +5,34 @@
 
 #include "todo.h"
 
-TodoResult save_todos(const char *filename, const Todo todos[], size_t *count) {
+TodoResult todo_save(const char *filename, const Todo todos[], size_t count) {
   FILE *fp = fopen(filename, "w");
   if (!fp) {
     return TODO_ERR_FILE;
   }
 
-  for (size_t i = 0; i < *count; i++) {
+  for (size_t i = 0; i < count; i++) {
     int result = fprintf(fp, "%lu;%s;%d\n", todos[i].id, todos[i].title,
                          todos[i].done ? 1 : 0);
     if (result < 0) {
       if (ferror(fp)) {
         fclose(fp);
-
-        return TODO_ERR_FILE_WRITE;
+        return TODO_ERR_FILE;
       }
-
       fclose(fp);
-
-      return TODO_ERR_FILE_WRITE;
+      return TODO_ERR_FILE;
     }
   }
 
   if (fclose(fp) != 0) {
-    return TODO_ERR_FILE_CLOSE;
+    return TODO_ERR_FILE;
   }
 
   return TODO_OK;
 }
 
-TodoResult load_todos(const char *filename, Todo **todos, size_t *capacity,
-                      size_t *count) {
+TodoResult todo_load(const char *filename, Todo **todos, size_t *capacity,
+                     size_t *count) {
   FILE *fp = fopen(filename, "r");
   if (!fp) {
     return TODO_ERR_FILE;
@@ -56,7 +53,7 @@ TodoResult load_todos(const char *filename, Todo **todos, size_t *capacity,
     }
 
     size_t id;
-    char title[TITLE_SIZE];
+    char title[100];
     int done;
     if (sscanf(line, "%lu;%99[^;];%d", &id, title, &done) == 3) {
       (*todos)[*count].id = id;
@@ -68,9 +65,9 @@ TodoResult load_todos(const char *filename, Todo **todos, size_t *capacity,
 
   if (ferror(fp)) {
     fclose(fp);
-    return TODO_ERR_FILE_READ;
+    return TODO_ERR_FILE;
   } else if (fclose(fp) != 0) {
-    return TODO_ERR_FILE_CLOSE;
+    return TODO_ERR_FILE;
   }
 
   return TODO_OK;

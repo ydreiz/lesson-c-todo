@@ -4,47 +4,39 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#define TODO_PATH "todos.txt"
-#define TITLE_SIZE 100
-
-typedef enum {
-  TODO_OK = 0,
-
-  TODO_CHOSE_AGREE = 101,
-  TODO_CHOSE_REJECT = 102,
-
-  TODO_ERR_ALLOC = 201,
-  TODO_ERR_NOT_FOUND = 202,
-  TODO_ERR_INVALID_INPUT = 203,
-  TODO_ERR_EMPTY_INPUT = 204,
-
-  TODO_ERR_FILE = 301,
-  TODO_ERR_FILE_WRITE = 302,
-  TODO_ERR_FILE_READ = 303,
-  TODO_ERR_FILE_CLOSE = 304,
-} TodoResult;
+#define TODO_FILE "todos.txt"
 
 typedef struct {
   size_t id;
-  char title[TITLE_SIZE];
+  char title[100];
   bool done;
 } Todo;
 
-TodoResult add_todo(Todo **todos, size_t *count, size_t *gloabl_id,
-                    size_t *capacity);
-TodoResult delete_todo(Todo todos[], size_t *count, size_t id);
-TodoResult toggle_todo_status(Todo todos[], size_t count, size_t id);
-TodoResult edit_todo_title(Todo todos[], size_t count, size_t id);
-void print_todos(const Todo todos[], size_t count);
+typedef enum {
+  TODO_NOTHING = -1,
+  TODO_OK = 0,
+  TODO_ERR_ALLOC = 201,
+  TODO_ERR_NOT_FOUND = 202,
+  TODO_ERR_EMPTY = 203,
+  TODO_ERR_FILE = 301,
+  TODO_ERR_OUT_OF_BOUNDS = 401,
+  TODO_ERR_INVALID_ARGUMENT = 501,
+} TodoResult;
 
-TodoResult input_title(char *buf, int size, const char *prompt);
-TodoResult input_status(void);
+TodoResult todo_add(const char *title, bool status, Todo *todos[],
+                    size_t *count, size_t *global_id, size_t *capacity);
 
-TodoResult save_todos(const char *filename, const Todo todos[], size_t *count);
-TodoResult load_todos(const char *filename, Todo **todos, size_t *capacity,
-                      size_t *count);
+TodoResult todo_delete(Todo todos[], size_t *count, size_t pos);
 
-const char *status_str(bool done);
-void clear_stdin(void);
+TodoResult todo_toggle_status(Todo todos[], size_t pos);
+
+TodoResult todo_change_title(const char *title, Todo todos[], size_t pos);
+
+TodoResult todo_find(const Todo todos[], size_t count, size_t id, size_t *pos);
+
+TodoResult todo_save(const char *filename, const Todo todos[], size_t count);
+
+TodoResult todo_load(const char *filename, Todo *todos[], size_t *capacity,
+                     size_t *count);
 
 #endif // !TODO_H

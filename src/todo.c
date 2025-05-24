@@ -5,92 +5,35 @@
 
 #include "todo.h"
 
-void clear_stdin(void) {
-  int c;
-  while ((c = getchar()) != '\n' && c != EOF)
-    ;
-}
-
-const char *status_str(bool ch) { return ch ? "[x]" : "[ ]"; }
-
-TodoResult input_title(char *buf, int size, const char *prompt) {
-  printf("%s: ", prompt);
-  if (fgets(buf, size, stdin) == NULL) {
-    return TODO_ERR_INVALID_INPUT;
-  } else if (ferror(stdin)) {
-    return TODO_ERR_INVALID_INPUT;
-  }
-
-  buf[strcspn(buf, "\n")] = '\0';
-
-  return strlen(buf) > 0 ? TODO_OK : TODO_ERR_EMPTY_INPUT;
-}
-
-TodoResult input_status() {
-  char ch[2];
-  do {
-    printf("Status is done [y/n] (Default: n): ");
-    if (fgets(ch, sizeof(ch), stdin) == NULL) {
-      return TODO_ERR_INVALID_INPUT;
-    } else if (ferror(stdin)) {
-      return TODO_ERR_INVALID_INPUT;
+TodoResult todo_add(const char *title, bool status, Todo *todos[],
+                    size_t *count, size_t *global_id, size_t *capacity) {
+  if (*count >= *capacity) {
+    *capacity *= 2;
+    Todo *todos_t = realloc(*todos, *capacity * sizeof(Todo));
+    if (!todos_t) {
+      return TODO_ERR_ALLOC;
     }
-    ch[strcspn(ch, "\n")] = '\0';
-
-    if (ch[0] == '\0') {
-      strcpy(ch, "n");
-    } else if (ch[strlen(ch) - 1] != '\n') {
-      clear_stdin();
-    }
-
-    if (strcmp(ch, "y") || strcmp(ch, "n")) {
-      return strcmp(ch, "y") == 0 ? TODO_CHOSE_AGREE : TODO_CHOSE_REJECT;
-    }
-  } while (true);
-}
-
-TodoResult add_todo(Todo **todos, size_t *count, size_t *global_id,
-                    size_t *capacity) {
-  char title[TITLE_SIZE];
-  TodoResult result = input_title(title, sizeof(title), "New todo title");
-  if (result == TODO_ERR_INVALID_INPUT) {
-    return TODO_ERR_INVALID_INPUT;
-  }
-  if (result == TODO_ERR_EMPTY_INPUT) {
-    return TODO_ERR_EMPTY_INPUT;
+    *todos = todos_t;
   }
 
   Todo todo;
-  todo.done = input_status();
   todo.id = ++(*global_id);
+  todo.done = status;
   strcpy(todo.title, title);
 
-  if (*count == *capacity) {
-    *capacity *= 2;
-    Todo *tmp = realloc(*todos, *capacity * sizeof(Todo));
-    if (!tmp) {
-      return TODO_ERR_ALLOC;
-    }
-    *todos = tmp;
-  }
   (*todos)[*count] = todo;
-
   (*count)++;
 
   return TODO_OK;
 }
 
-TodoResult delete_todo(Todo todos[], size_t *count, size_t id) {
-  int pos = -1;
-  for (size_t i = 0; i < *count; i++) {
-    if (todos[i].id == id) {
-      pos = i;
-      break;
-    }
+TodoResult todo_delete(Todo todos[], size_t *count, size_t pos) {
+  if (todos == NULL || count == NULL) {
+    return TODO_ERR_INVALID_ARGUMENT;
   }
 
-  if (pos == -1) {
-    return TODO_ERR_NOT_FOUND;
+  if (pos >= *count) {
+    return TODO_ERR_OUT_OF_BOUNDS;
   }
 
   for (size_t i = pos; i < *count - 1; i++) {
@@ -102,37 +45,19 @@ TodoResult delete_todo(Todo todos[], size_t *count, size_t id) {
   return TODO_OK;
 }
 
-TodoResult toggle_todo_status(Todo todos[], size_t count, size_t id) {
-  for (size_t i = 0; i < count; i++) {
-    if (todos[i].id == id) {
-      todos[i].done = !todos[i].done;
-      return TODO_OK;
-    }
+TodoResult todo_toggle_status(Todo todos[], size_t pos) {
+  if (todos == NULL) {
+    return TODO_ERR_INVALID_ARGUMENT;
   }
-  return TODO_ERR_NOT_FOUND;
+
+  todos[pos].done = !todos[pos].done;
+
+  return TODO_OK;
 }
 
-TodoResult edit_todo_title(Todo todos[], size_t count, size_t id) {
-  int pos = -1;
-  for (size_t i = 0; i < count; i++) {
-    if (id == todos[i].id) {
-      pos = i;
-      break;
-    }
-  }
-
-  if (pos == -1) {
-    return TODO_ERR_NOT_FOUND;
-  }
-
-  char title[TITLE_SIZE];
-  TodoResult result;
-  result = input_title(title, sizeof(title), "New todo title");
-  if (result == TODO_ERR_INVALID_INPUT) {
-    return TODO_ERR_INVALID_INPUT;
-  }
-  if (result == TODO_ERR_EMPTY_INPUT) {
-    return TODO_ERR_EMPTY_INPUT;
+TodoResult todo_change_title(const char *title, Todo todos[], size_t pos) {
+  if (todos == NULL) {
+    return TODO_ERR_INVALID_ARGUMENT;
   }
 
   strcpy(todos[pos].title, title);
@@ -140,16 +65,21 @@ TodoResult edit_todo_title(Todo todos[], size_t count, size_t id) {
   return TODO_OK;
 }
 
-void print_todos(const Todo todos[], size_t count) {
+TodoResult todo_find(const Todo todos[], size_t count, size_t id, size_t *pos) {
+  if (todos == NULL || pos == NULL) {
+    return TODO_ERR_INVALID_ARGUMENT;
+  }
+
+  if (count == 0) {
+    return TODO_ERR_EMPTY;
+  }
+
   for (size_t i = 0; i < count; i++) {
-    Todo todo = todos[i];
-    if (count < 10) {
-      printf("[%lu] %-50s %s\n", todo.id, todo.title, status_str(todo.done));
-    } else if (count >= 100) {
-      printf("[%3lu] %-48s %s\n", todo.id, todo.title, status_str(todo.done));
-    } else {
-      printf("[%2lu] %-49s %s\n", todo.id, todo.title, status_str(todo.done));
+    if (todos[i].id == id) {
+      *pos = i;
+      return TODO_OK;
     }
   }
-  printf("Total todos: %lu\n", count);
+
+  return TODO_ERR_NOT_FOUND;
 }
