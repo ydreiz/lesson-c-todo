@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Wall -Wextra -std=c11 -Iinclude -g
+CFLAGS = -Wall -Wextra -std=c23 -Iinclude -g
 
 SRC_DIR = src
 TEST_DIR = tests
