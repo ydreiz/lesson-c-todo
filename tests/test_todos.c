@@ -10,6 +10,18 @@ bool test_find_todo_by_id_todos_empty(void);
 bool test_find_todo_by_id_todos_null(void);
 bool test_find_todo_by_id_pos_null(void);
 
+bool test_delete_todo_removes_item(void);
+bool test_delete_todo_removes_item_out_of_bounds(void);
+bool test_delete_todo_removes_item_todos_null(void);
+bool test_delete_todo_removes_item_count_null(void);
+
+bool test_toggle_todo_status_changes_value(void);
+bool test_toggle_todo_status_changes_value_todos_null(void);
+
+bool test_change_todo_title(void);
+bool test_change_todo_title_todos_null(void);
+bool test_change_todo_title_null(void);
+
 // bool test_delete_todo_removes_item(void);
 // bool test_toggle_todo_status_changes_value(void);
 // bool test_edit_todo_title_change_title(void);
@@ -27,6 +39,18 @@ int main(void)
   run_test("Find Todo by ID when todos are empty", test_find_todo_by_id_todos_empty);
   run_test("Find Todo by ID when todos is NULL", test_find_todo_by_id_todos_null);
   run_test("Find Todo by ID when pos is NULL", test_find_todo_by_id_pos_null);
+
+  run_test("Delete Todo removes item", test_delete_todo_removes_item);
+  run_test("Delete Todo removes item out of bounds", test_delete_todo_removes_item_out_of_bounds);
+  run_test("Delete Todo removes item when todos is NULL", test_delete_todo_removes_item_todos_null);
+  run_test("Delete Todo removes item when count is NULL", test_delete_todo_removes_item_count_null);
+
+  run_test("Toggle Todo status changes value", test_toggle_todo_status_changes_value);
+  run_test("Toggle Todo status changes value when todos is NULL", test_toggle_todo_status_changes_value_todos_null);
+
+  run_test("Change Todo title", test_change_todo_title);
+  run_test("Change Todo title when todos is NULL", test_change_todo_title_todos_null);
+  run_test("Change Todo title when title is NULL", test_change_todo_title_null);
 
   // run_test("Delete Todo removes item", test_delete_todo_removes_item);
   // run_test("Toggle Todo status changes value",

@@ -65,7 +65,7 @@ TodoResult todo_toggle_status(Todo todos[], size_t pos)
 
 TodoResult todo_change_title(const char *title, Todo todos[], size_t pos)
 {
-  if (todos == NULL)
+  if (todos == NULL || title == NULL)
   {
     return TODO_ERR_INVALID_ARGUMENT;
   }

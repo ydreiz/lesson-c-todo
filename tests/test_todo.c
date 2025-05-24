@@ -113,59 +113,112 @@ bool test_find_todo_by_id_pos_null(void)
   return true;
 }
 
-// bool test_delete_todo_removes_item(void) {
-//   size_t count = 3;
-//   Todo todos[5] = {{1, "Test", false},
-//                    {2, "Another Test", false},
-//                    {3, "Yet Another Test", false}};
-//
-//   TodoResult res = todo_delete(todos, &count, 3);
-//
-//   ASSERT_TRUE(res == TODO_OK);
-//   ASSERT_TRUE(count == 2);
-//
-//   return true;
-// }
+bool test_delete_todo_removes_item(void)
+{
+  size_t count = 3;
+  Todo todos[5] = {{1, "Test", false}, {2, "Another Test", false}, {3, "Yet Another Test", false}};
+  size_t remove_pos = 1; // Remove the second item (id 2)
 
-// bool test_toggle_todo_status_changes_value(void) {
-//   size_t count = 1;
-//   Todo todos[1] = {{1, "Test", false}};
-//
-//   TodoResult res = toggle_todo_status(todos, count, 1);
-//   ASSERT_TRUE(res == TODO_OK);
-//   ASSERT_TRUE(todos[0].done == true);
-//
-//   res = toggle_todo_status(todos, count, 1);
-//   ASSERT_TRUE(res == TODO_OK);
-//   ASSERT_TRUE(todos[0].done == false);
-//
-//   return true;
-// }
-//
-// bool test_edit_todo_title_change_title(void) {
-//   size_t count = 2;
-//   Todo todos[2] = {{1, "Test", false}, {2, "Another Test", false}};
-//
-//   const char *mock_new_title = "New Todo\n";
-//
-//   FILE *t_file = tmpfile();
-//   if (!t_file) {
-//     return false;
-//   }
-//   fputs(mock_new_title, t_file);
-//   rewind(t_file);
-//
-//   FILE *original_stdin = stdin;
-//   stdin = t_file;
-//
-//   TodoResult res = edit_todo_title(todos, count, 1);
-//
-//   stdin = original_stdin;
-//   fclose(t_file);
-//
-//   ASSERT_TRUE(res == TODO_OK);
-//   ASSERT_TRUE(strlen(todos[0].title) > 0);
-//   ASSERT_TRUE(strcmp(todos[0].title, "New Todo") == 0);
-//
-//   return true;
-// }
+  TodoResult res = todo_delete(todos, &count, remove_pos);
+
+  ASSERT_TRUE(res == TODO_OK);
+  ASSERT_TRUE(count == 2);
+  ASSERT_TRUE(todos[0].id == 1);
+  ASSERT_TRUE(strcmp(todos[0].title, "Test") == 0);
+  ASSERT_TRUE(todos[1].id == 3);
+  ASSERT_TRUE(strcmp(todos[1].title, "Yet Another Test") == 0);
+
+  return true;
+}
+
+bool test_delete_todo_removes_item_out_of_bounds(void)
+{
+  size_t count = 4;
+  Todo todos[5] = {{1, "Test", false}, {2, "Another Test", false}, {3, "Yet Another Test", false}};
+  size_t remove_pos = 5; // Attempt to remove an item at an out-of-bounds index
+
+  TodoResult res = todo_delete(todos, &count, remove_pos);
+
+  ASSERT_TRUE(res == TODO_ERR_OUT_OF_BOUNDS);
+
+  return true;
+}
+
+bool test_delete_todo_removes_item_todos_null(void)
+{
+  size_t count = 0;
+  TodoResult res = todo_delete(NULL, &count, 0);
+
+  ASSERT_TRUE(res == TODO_ERR_INVALID_ARGUMENT);
+
+  return true;
+}
+
+bool test_delete_todo_removes_item_count_null(void)
+{
+  Todo todos[1] = {{1, "Test", false}};
+  TodoResult res = todo_delete(NULL, NULL, 0);
+
+  ASSERT_TRUE(res == TODO_ERR_INVALID_ARGUMENT);
+
+  return true;
+}
+
+bool test_toggle_todo_status_changes_value(void)
+{
+  Todo todos[1] = {{1, "Test", false}};
+  size_t pos = 0;
+
+  TodoResult res = todo_toggle_status(todos, pos);
+  ASSERT_TRUE(res == TODO_OK);
+  ASSERT_TRUE(todos[0].done == true);
+
+  res = todo_toggle_status(todos, pos);
+  ASSERT_TRUE(res == TODO_OK);
+  ASSERT_TRUE(todos[0].done == false);
+
+  return true;
+}
+
+bool test_toggle_todo_status_changes_value_todos_null(void)
+{
+  TodoResult res = todo_toggle_status(NULL, 0);
+
+  ASSERT_TRUE(res == TODO_ERR_INVALID_ARGUMENT);
+
+  return true;
+}
+
+bool test_change_todo_title(void)
+{
+  size_t count = 3;
+  Todo todos[3] = {{1, "Test", false}, {2, "Another Test", false}, {3, "Yet Another Test", false}};
+
+  TodoResult res = todo_change_title("New Todo", todos, 1);
+
+  ASSERT_TRUE(res == TODO_OK);
+  ASSERT_TRUE(strlen(todos[1].title) > 0);
+  ASSERT_TRUE(strcmp(todos[1].title, "New Todo") == 0);
+
+  return true;
+}
+
+bool test_change_todo_title_todos_null(void)
+{
+  TodoResult res = todo_change_title("New Todo", NULL, 0);
+
+  ASSERT_TRUE(res == TODO_ERR_INVALID_ARGUMENT);
+
+  return true;
+}
+
+bool test_change_todo_title_null(void)
+{
+  Todo todos[1] = {{1, "Test", false}};
+
+  TodoResult res = todo_change_title(NULL, todos, 0);
+
+  ASSERT_TRUE(res == TODO_ERR_INVALID_ARGUMENT);
+
+  return true;
+}
