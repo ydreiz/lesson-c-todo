@@ -5,6 +5,55 @@
 
 #include "todo.h"
 
+TodoList *todo_list_create(size_t capacity)
+{
+  TodoList *list = malloc(sizeof(TodoList));
+  if (!list)
+  {
+    return NULL;
+  }
+
+  list->todos = malloc(capacity * sizeof(Todo));
+  if (!list->todos)
+  {
+    free(list);
+    return NULL;
+  }
+
+  list->size = capacity;
+
+  return list;
+}
+
+TodoResult todo_list_resize(TodoList *list)
+{
+  if (!list)
+  {
+    return TODO_ERR_INVALID_ARGUMENT;
+  }
+  size_t new_size = list->size * 2;
+  Todo *tmp = realloc(list->todos, new_size * sizeof(Todo));
+  if (!tmp && new_size > 0)
+  {
+    return TODO_ERR_ALLOC;
+  }
+  list->todos = tmp;
+  list->size = new_size;
+  return TODO_OK;
+}
+
+void todo_list_destroy(TodoList **list_ptr)
+{
+  if (list_ptr && *list_ptr)
+  {
+    free((*list_ptr)->todos);
+    (*list_ptr)->todos = NULL;
+
+    free(*list_ptr);
+    *list_ptr = NULL;
+  }
+}
+
 TodoResult todo_add(const char *title, bool status, Todo *todos[], size_t *count, size_t *global_id, size_t *capacity)
 {
   if (*count >= *capacity)

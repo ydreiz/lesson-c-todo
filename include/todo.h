@@ -13,6 +13,12 @@ typedef struct
   bool done;
 } Todo;
 
+typedef struct
+{
+  Todo *todos;
+  size_t size;
+} TodoList;
+
 typedef enum
 {
   TODO_NOTHING = -1,
@@ -38,5 +44,11 @@ TodoResult todo_find(const Todo todos[], size_t count, size_t id, size_t *pos);
 TodoResult todo_save(const char *filename, const Todo todos[], size_t count);
 
 TodoResult todo_load(const char *filename, Todo *todos[], size_t *capacity, size_t *count);
+
+TodoList *todo_list_create(size_t initial_capacity);
+
+TodoResult todo_list_resize(TodoList *list);
+
+void todo_list_destroy(TodoList **list);
 
 #endif // !TODO_H
