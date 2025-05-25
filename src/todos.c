@@ -16,7 +16,7 @@ int main(void)
   TodoList *todos = todo_list_create(initial_capacity);
   if (!todos || !todos->data)
   {
-    print_error("Failed to allocate memory for todos.");
+    print_error("Failed to allocate memory for todos");
     return EXIT_FAILURE;
   }
 
@@ -24,13 +24,13 @@ int main(void)
   TodoResult todo_result = todo_load(TODO_FILE, todos);
   if (todo_result == TODO_ERR_ALLOC)
   {
-    print_error("Unable to allocate required memory. Operation aborted.");
+    print_error("Unable to allocate required memory. Operation aborted");
     todo_list_destroy(&todos);
     return EXIT_FAILURE;
   }
   else if (todo_result == TODO_ERR_FILE)
   {
-    print_error("Unable to open file.");
+    print_notify("Unable to open 'todos.txt' file");
   }
   else
   {
@@ -189,19 +189,19 @@ int main(void)
     }
     else if (todo_result == TODO_ERR_NOT_FOUND)
     {
-      print_error("Todo could not be found.");
+      print_notify("Todo could not be found.");
     }
     else if (todo_result == TODO_ERR_OUT_OF_BOUNDS)
     {
-      print_error("Todo ID is out of bounds.");
+      print_notify("Todo ID is out of bounds.");
     }
     else if (todo_result == TODO_ERR_EMPTY)
     {
-      print_error("Todo list is empty.");
+      print_notify("Todo list is empty.");
     }
     else if (todo_result == TODO_ERR_FILE)
     {
-      print_error("Unable to close file.");
+      print_notify("Unable to open 'todos.txt' file");
     }
     else if (todo_result == TODO_OK)
     {
