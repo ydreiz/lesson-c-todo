@@ -86,7 +86,7 @@ TodoResult todo_delete(TodoList *todos, size_t pos)
   {
     return TODO_ERR_EMPTY;
   }
-  else if (pos > todos->size)
+  else if (pos >= todos->size)
   {
     return TODO_ERR_OUT_OF_BOUNDS;
   }
@@ -151,13 +151,17 @@ TodoResult todo_find(const TodoList *todos, size_t id, size_t *pos)
 
 void todo_recalculate_next_id(TodoList *todos)
 {
-  if (todos->data == NULL || todos->size == 0)
+  if (!todos || !todos->data || todos->size == 0)
   {
     return;
   }
+  size_t max_id = 0;
   for (size_t i = 0; i < todos->size; i++)
   {
-    if (todos->data[i].id == todos->next_id)
-      todos->next_id = todos->data[i].id + 1;
+    if (todos->data[i].id > max_id)
+    {
+      max_id = todos->data[i].id;
+    }
   }
+  todos->next_id = max_id + 1;
 }
