@@ -15,8 +15,10 @@ typedef struct
 
 typedef struct
 {
-  Todo *todos;
+  Todo *data;
   size_t size;
+  size_t next_id;
+  size_t capacity;
 } TodoList;
 
 typedef enum
@@ -31,24 +33,26 @@ typedef enum
   TODO_ERR_INVALID_ARGUMENT = 501,
 } TodoResult;
 
-TodoResult todo_add(const char *title, bool status, Todo *todos[], size_t *count, size_t *global_id, size_t *capacity);
+TodoResult todo_add(const char *title, bool status, TodoList *todos);
 
-TodoResult todo_delete(Todo todos[], size_t *count, size_t pos);
+TodoResult todo_delete(TodoList *todos, size_t pos);
 
-TodoResult todo_toggle_status(Todo todos[], size_t pos);
+TodoResult todo_toggle_status(TodoList *todos, size_t pos);
 
-TodoResult todo_change_title(const char *title, Todo todos[], size_t pos);
+TodoResult todo_change_title(const char *title, TodoList *todos, size_t pos);
 
-TodoResult todo_find(const Todo todos[], size_t count, size_t id, size_t *pos);
+TodoResult todo_find(const TodoList *todos, size_t id, size_t *pos);
 
-TodoResult todo_save(const char *filename, const Todo todos[], size_t count);
+TodoResult todo_save(const char *filename, const TodoList *todos);
 
-TodoResult todo_load(const char *filename, Todo *todos[], size_t *capacity, size_t *count);
+TodoResult todo_load(const char *filename, TodoList *todos);
 
-TodoList *todo_list_create(size_t initial_capacity);
+TodoList *todo_list_create(size_t capacity);
 
-TodoResult todo_list_resize(TodoList *list);
+TodoResult todo_list_resize(TodoList *todos);
 
-void todo_list_destroy(TodoList **list);
+void todo_list_destroy(TodoList **todos);
+
+void todo_recalculate_next_id(TodoList *todos);
 
 #endif // !TODO_H

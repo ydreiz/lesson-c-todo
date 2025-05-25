@@ -25,7 +25,7 @@ typedef enum
 
 void tui_print_menus(void);
 
-void tui_print_todos(const Todo todos[], size_t count);
+void tui_print_todos(const TodoList *todos);
 
 TuiResult tui_input_text(char *buf, int size, const char *prompt);
 

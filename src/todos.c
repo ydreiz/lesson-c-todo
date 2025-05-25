@@ -11,39 +11,21 @@ size_t global_id = 0;
 const size_t initial_capacity = 3;
 size_t capacity = initial_capacity;
 
-void recalculate_global_id(const Todo *todos, size_t count)
-{
-  if (todos == NULL || count == 0)
-  {
-    return;
-  }
-
-  for (size_t i = 0; i < count; i++)
-  {
-    if (todos[i].id > global_id)
-      global_id = todos[i].id;
-  }
-}
-
 int main(void)
 {
-  Todo *todos = malloc(initial_capacity * sizeof(Todo));
-  if (!todos)
+  TodoList *todos = todo_list_create(initial_capacity);
+  if (!todos || !todos->data)
   {
     print_error("Failed to allocate memory for todos.");
     return EXIT_FAILURE;
   }
 
-  size_t count = 0;
   TuiResult tui_result = TUI_OK;
-  TodoResult todo_result = todo_load(TODO_FILE, &todos, &capacity, &count);
-
+  TodoResult todo_result = todo_load(TODO_FILE, todos);
   if (todo_result == TODO_ERR_ALLOC)
   {
     print_error("Unable to allocate required memory. Operation aborted.");
-
-    free(todos);
-
+    todo_list_destroy(&todos);
     return EXIT_FAILURE;
   }
   else if (todo_result == TODO_ERR_FILE)
@@ -52,7 +34,7 @@ int main(void)
   }
   else
   {
-    recalculate_global_id(todos, count);
+    todo_recalculate_next_id(todos);
   }
 
   int running = 1;
@@ -60,7 +42,7 @@ int main(void)
   {
     TodoResult todo_result = TODO_NOTHING;
 
-    tui_print_todos(todos, count);
+    tui_print_todos(todos);
     tui_print_menus();
 
     size_t choice = TUI_MENU_EXIT;
@@ -83,12 +65,12 @@ int main(void)
       }
 
       char status_str[2];
-      if (tui_input_text(status_str, count, "Is done? [y/N]: ") == TUI_ERR_EMPTY_INPUT)
+      if (tui_input_text(status_str, 2, "Is done? [y/N]: ") == TUI_ERR_EMPTY_INPUT)
       {
         strcpy(status_str, "n");
       }
 
-      if ((todo_result = todo_add(title, *status_str == 'y', &todos, &count, &global_id, &capacity)) == TODO_OK)
+      if ((todo_result = todo_add(title, *status_str == 'y', todos)) == TODO_OK)
       {
         print_success("Todo has been added successfully.");
         continue;
@@ -105,7 +87,7 @@ int main(void)
       }
 
       size_t pos = -1;
-      if ((todo_result = todo_find(todos, count, id, &pos)) == TODO_OK)
+      if ((todo_result = todo_find(todos, id, &pos)) == TODO_OK)
       {
         if ((todo_result = todo_toggle_status(todos, pos)) == TODO_OK)
         {
@@ -124,7 +106,7 @@ int main(void)
       }
 
       size_t pos = -1;
-      if ((todo_result = todo_find(todos, count, id, &pos)) == TODO_OK)
+      if ((todo_result = todo_find(todos, id, &pos)) == TODO_OK)
       {
         char title[100];
         tui_result = tui_input_text(title, sizeof(title), "Enter title: ");
@@ -154,9 +136,9 @@ int main(void)
       }
 
       size_t pos = -1;
-      if ((todo_result = todo_find(todos, count, id, &pos)) == TODO_OK)
+      if ((todo_result = todo_find(todos, id, &pos)) == TODO_OK)
       {
-        if ((todo_result = todo_delete(todos, &count, pos)) == TODO_OK)
+        if ((todo_result = todo_delete(todos, pos)) == TODO_OK)
         {
           print_success("Todo deleted successfully.");
           continue;
@@ -166,7 +148,7 @@ int main(void)
     }
     case TUI_MENU_SAVE_TODOS:
     {
-      if ((todo_result = todo_save(TODO_FILE, todos, count)) == TODO_OK)
+      if ((todo_result = todo_save(TODO_FILE, todos)) == TODO_OK)
       {
         print_success("Todos saved successfully.");
         continue;
@@ -175,22 +157,21 @@ int main(void)
     }
     case TUI_MENU_LOAD_TODOS:
     {
-      count = 0;
-      capacity = initial_capacity;
-      free(todos);
-      todos = malloc(initial_capacity * sizeof(Todo));
-      if (!todos)
+      todos->size = 0;
+      todos->capacity = initial_capacity;
+      todo_list_destroy(&todos);
+      todos = todo_list_create(initial_capacity);
+      if (!todos || !todos->data)
       {
         print_error("Failed to allocate memory for todos.");
         return EXIT_FAILURE;
       }
 
-      if ((todo_result = todo_load(TODO_FILE, &todos, &capacity, &count)) == TODO_OK)
+      if ((todo_result = todo_load(TODO_FILE, todos)) == TODO_OK)
       {
         print_success("Todos loaded successfully.");
         continue;
       }
-
       break;
     }
     case TUI_MENU_EXIT:
@@ -228,7 +209,7 @@ int main(void)
     }
   }
 
-  free(todos);
+  todo_list_destroy(&todos);
 
   return EXIT_SUCCESS;
 }

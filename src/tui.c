@@ -17,23 +17,23 @@ void tui_print_menus(void)
   printf("Enter your choice: ");
 }
 
-void tui_print_todos(const Todo todos[], size_t count)
+void tui_print_todos(const TodoList *todos)
 {
-  if (todos == NULL || count == 0)
+  if (todos == NULL || todos->size == 0)
   {
     return;
   }
 
-  for (size_t i = 0; i < count; i++)
+  for (size_t i = 0; i < todos->size; i++)
   {
-    Todo todo = todos[i];
+    Todo todo = todos->data[i];
     char *status_str = todo.done ? "[x]" : "[ ]";
 
-    if (count < 10)
+    if (todos->size < 10)
     {
       printf("[%lu] %-50s %s\n", todo.id, todo.title, status_str);
     }
-    else if (count >= 100)
+    else if (todos->size >= 100)
     {
       printf("[%3lu] %-48s %s\n", todo.id, todo.title, status_str);
     }
@@ -43,7 +43,7 @@ void tui_print_todos(const Todo todos[], size_t count)
     }
   }
 
-  printf("Total todos: %lu\n", count);
+  printf("Total todos: %lu\n", todos->size);
 }
 
 TuiResult tui_input_text(char *buf, int size, const char *prompt)
