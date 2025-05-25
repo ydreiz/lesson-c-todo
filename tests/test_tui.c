@@ -4,8 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../include/test.h"
-#include "../include/tui.h"
+#include "test.h"
+#include "todo.h"
+#include "tui.h"
+
+void _fill_stub_todos(TodoList *todos, size_t size);
 
 static FILE *create_tmpfile_with_content(const char *content)
 {
@@ -26,15 +29,14 @@ static FILE *create_tmpfile_with_content(const char *content)
   return tmp;
 }
 
-static void capture_stdout(void (*func)(const Todo[], size_t), const Todo *todos, size_t count, char *out_buf,
-                           size_t buf_size)
+static void capture_stdout(void (*func)(const TodoList *), const TodoList *todos, char *out_buf, size_t buf_size)
 {
   FILE *old_stdout = stdout;
   FILE *tmp = tmpfile();
   assert(tmp != NULL);
 
   stdout = tmp;
-  func(todos, count);
+  func(todos);
   fflush(tmp);
 
   rewind(tmp);
@@ -171,50 +173,46 @@ bool test_tui_input_number_eof(void)
 bool test_tui_print_todos()
 {
   char output[8192];
-  Todo todos_small[] = {{1, "Task one", false}, {2, "Task two", true}};
 
-  Todo todos_medium[10];
-  for (size_t i = 0; i < 10; i++)
-  {
-    todos_medium[i].id = i + 1;
-    snprintf(todos_medium[i].title, sizeof(todos_medium[i].title), "Task %zu", i + 1);
-    todos_medium[i].done = (i % 2 == 0);
-  }
+  TodoList *todos_small = todo_list_create(3);
+  _fill_stub_todos(todos_small, 2);
 
-  Todo todos_large[100];
-  for (size_t i = 0; i < 100; i++)
-  {
-    todos_large[i].id = i + 1;
-    snprintf(todos_large[i].title, sizeof(todos_large[i].title), "Task %zu", i + 1);
-    todos_large[i].done = (i % 3 == 0);
-  }
+  TodoList *todos_medium = todo_list_create(10);
+  _fill_stub_todos(todos_medium, 10);
+
+  TodoList *todos_large = todo_list_create(100);
+  _fill_stub_todos(todos_large, 100);
 
   // Test 1: NULL and 0 count (nothing should be output)
-  capture_stdout(tui_print_todos, NULL, 0, output, sizeof(output));
+  capture_stdout(tui_print_todos, NULL, output, sizeof(output));
   ASSERT_TRUE(strlen(output) == 0);
 
   // Test 2: count < 10 (the first printf with formatting is used)
-  capture_stdout(tui_print_todos, todos_small, 2, output, sizeof(output));
+  capture_stdout(tui_print_todos, todos_small, output, sizeof(output));
   // Let's check that the output contains lines with “[1]”, “[2]” and statuses
   ASSERT_TRUE(strstr(output, "[1]") != NULL);
-  ASSERT_TRUE(strstr(output, "Task one") != NULL);
+  ASSERT_TRUE(strstr(output, "TEST 1") != NULL);
   ASSERT_TRUE(strstr(output, "[ ]") != NULL);
   ASSERT_TRUE(strstr(output, "[x]") != NULL);
   ASSERT_TRUE(strstr(output, "Total todos: 2") != NULL);
 
   // Test 3: 10 <= count < 100 (second printf is used)
-  capture_stdout(tui_print_todos, todos_medium, 10, output, sizeof(output));
+  capture_stdout(tui_print_todos, todos_medium, output, sizeof(output));
   // Check for the presence of “[ 1]” (with two spaces), “[10]”
   ASSERT_TRUE(strstr(output, "[ 1]") != NULL);
   ASSERT_TRUE(strstr(output, "[10]") != NULL);
   ASSERT_TRUE(strstr(output, "Total todos: 10") != NULL);
 
   // Test 4: count >= 100 (third printf is used)
-  capture_stdout(tui_print_todos, todos_large, 100, output, sizeof(output));
+  capture_stdout(tui_print_todos, todos_large, output, sizeof(output));
   // Let's check for the presence of “[ 1]” (with three spaces), “[100]”
   ASSERT_TRUE(strstr(output, "[  1]") != NULL);
   ASSERT_TRUE(strstr(output, "[100]") != NULL);
   ASSERT_TRUE(strstr(output, "Total todos: 100") != NULL);
+
+  todo_list_destroy(&todos_small);
+  todo_list_destroy(&todos_medium);
+  todo_list_destroy(&todos_large);
 
   return true;
 }
