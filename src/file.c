@@ -5,7 +5,7 @@
 
 #include "todo.h"
 
-TodoResult todo_save(const char *filename, const Todo todos[], size_t count)
+TodoResult todo_save(const char *filename, const TodoList *todos)
 {
   FILE *fp = fopen(filename, "w");
   if (!fp)
@@ -13,9 +13,10 @@ TodoResult todo_save(const char *filename, const Todo todos[], size_t count)
     return TODO_ERR_FILE;
   }
 
-  for (size_t i = 0; i < count; i++)
+  for (size_t i = 0; i < todos->size; i++)
   {
-    int result = fprintf(fp, "%lu;%s;%d\n", todos[i].id, todos[i].title, todos[i].done ? 1 : 0);
+    Todo todo = todos->data[i];
+    int result = fprintf(fp, "%lu;%s;%d\n", todo.id, todo.title, todo.done ? 1 : 0);
     if (result < 0)
     {
       if (ferror(fp))
@@ -36,7 +37,7 @@ TodoResult todo_save(const char *filename, const Todo todos[], size_t count)
   return TODO_OK;
 }
 
-TodoResult todo_load(const char *filename, Todo **todos, size_t *capacity, size_t *count)
+TodoResult todo_load(const char *filename, TodoList *todos)
 {
   FILE *fp = fopen(filename, "r");
   if (!fp)
@@ -47,18 +48,10 @@ TodoResult todo_load(const char *filename, Todo **todos, size_t *capacity, size_
   char line[256];
   while (fgets(line, sizeof(line), fp))
   {
-    if (*count == *capacity)
+    TodoResult result = todo_list_resize(todos);
+    if (result != TODO_NOTHING && result != TODO_OK)
     {
-      *capacity *= 2;
-      Todo *tmp = realloc(*todos, *capacity * sizeof(Todo));
-      if (!tmp)
-      {
-        fprintf(stderr, "An error occurred while allocating "
-                        "memory for the todo list\n");
-        fclose(fp);
-        return TODO_ERR_ALLOC;
-      }
-      *todos = tmp;
+      return TODO_ERR_ALLOC;
     }
 
     size_t id;
@@ -66,10 +59,10 @@ TodoResult todo_load(const char *filename, Todo **todos, size_t *capacity, size_
     int done;
     if (sscanf(line, "%lu;%99[^;];%d", &id, title, &done) == 3)
     {
-      (*todos)[*count].id = id;
-      strcpy((*todos)[*count].title, title);
-      (*todos)[*count].done = done != 0;
-      (*count)++;
+      todos->data[todos->size].id = id;
+      strcpy(todos->data[todos->size].title, title);
+      todos->data[todos->size].done = done != 0;
+      todos->size++;
     }
   }
 
@@ -82,6 +75,5 @@ TodoResult todo_load(const char *filename, Todo **todos, size_t *capacity, size_
   {
     return TODO_ERR_FILE;
   }
-
   return TODO_OK;
 }

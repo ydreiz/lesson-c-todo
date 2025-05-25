@@ -7,143 +7,134 @@
 
 TodoList *todo_list_create(size_t capacity)
 {
-  TodoList *list = malloc(sizeof(TodoList));
-  if (!list)
+  TodoList *todos = malloc(sizeof(TodoList));
+  if (!todos)
   {
     return NULL;
   }
-
-  list->todos = malloc(capacity * sizeof(Todo));
-  if (!list->todos)
+  todos->data = malloc(capacity * sizeof(Todo));
+  if (!todos->data)
   {
-    free(list);
+    free(todos);
     return NULL;
   }
-
-  list->size = capacity;
-
-  return list;
+  todos->size = 0;
+  todos->capacity = capacity;
+  todos->next_id = 1;
+  return todos;
 }
 
-TodoResult todo_list_resize(TodoList *list)
+TodoResult todo_list_resize(TodoList *todos)
 {
-  if (!list)
+  if (!todos)
   {
     return TODO_ERR_INVALID_ARGUMENT;
   }
-  size_t new_size = list->size * 2;
-  Todo *tmp = realloc(list->todos, new_size * sizeof(Todo));
-  if (!tmp && new_size > 0)
+  if (todos->capacity > todos->size)
+  {
+    return TODO_NOTHING;
+  }
+  size_t new_capacity = todos->capacity * 2;
+  Todo *tmp = realloc(todos->data, new_capacity * sizeof(Todo));
+  if (!tmp && new_capacity > 0)
   {
     return TODO_ERR_ALLOC;
   }
-  list->todos = tmp;
-  list->size = new_size;
+  todos->data = tmp;
+  todos->capacity = new_capacity;
   return TODO_OK;
 }
 
-void todo_list_destroy(TodoList **list_ptr)
+void todo_list_destroy(TodoList **todos_ptr)
 {
-  if (list_ptr && *list_ptr)
+  if (todos_ptr && *todos_ptr)
   {
-    free((*list_ptr)->todos);
-    (*list_ptr)->todos = NULL;
+    free((*todos_ptr)->data);
+    (*todos_ptr)->data = NULL;
 
-    free(*list_ptr);
-    *list_ptr = NULL;
+    free(*todos_ptr);
+    *todos_ptr = NULL;
   }
 }
 
-TodoResult todo_add(const char *title, bool status, Todo *todos[], size_t *count, size_t *global_id, size_t *capacity)
+TodoResult todo_add(const char *title, bool status, TodoList *todos)
 {
-  if (*count >= *capacity)
+  if (todos->size >= todos->capacity)
   {
-    *capacity *= 2;
-    Todo *todos_t = realloc(*todos, *capacity * sizeof(Todo));
-    if (!todos_t)
+    TodoResult res = todo_list_resize(todos);
+    if (res == TODO_ERR_ALLOC || res == TODO_ERR_INVALID_ARGUMENT)
     {
       return TODO_ERR_ALLOC;
     }
-    *todos = todos_t;
   }
 
   Todo todo;
-  todo.id = ++(*global_id);
+  todo.id = todos->next_id++;
   todo.done = status;
   strcpy(todo.title, title);
 
-  (*todos)[*count] = todo;
-  (*count)++;
+  todos->data[todos->size] = todo;
+  todos->size++;
 
   return TODO_OK;
 }
 
-TodoResult todo_delete(Todo todos[], size_t *count, size_t pos)
+TodoResult todo_delete(TodoList *todos, size_t pos)
 {
-  if (todos == NULL || count == NULL)
-  {
-    return TODO_ERR_INVALID_ARGUMENT;
-  }
-
-  if (pos >= *count)
+  if (pos > todos->size)
   {
     return TODO_ERR_OUT_OF_BOUNDS;
   }
-
-  for (size_t i = pos; i < *count - 1; i++)
+  for (size_t i = pos; i < todos->size - 1; i++)
   {
-    todos[i] = todos[i + 1];
+    todos->data[i] = todos->data[i + 1];
   }
-
-  (*count)--;
-
+  todos->size--;
   return TODO_OK;
 }
 
-TodoResult todo_toggle_status(Todo todos[], size_t pos)
+TodoResult todo_toggle_status(TodoList *todos, size_t pos)
 {
-  if (todos == NULL)
-  {
-    return TODO_ERR_INVALID_ARGUMENT;
-  }
-
-  todos[pos].done = !todos[pos].done;
-
+  todos->data[pos].done = !todos->data[pos].done;
   return TODO_OK;
 }
 
-TodoResult todo_change_title(const char *title, Todo todos[], size_t pos)
+TodoResult todo_change_title(const char *title, TodoList *todos, size_t pos)
 {
-  if (todos == NULL || title == NULL)
-  {
-    return TODO_ERR_INVALID_ARGUMENT;
-  }
-
-  strcpy(todos[pos].title, title);
-
+  strcpy(todos->data[pos].title, title);
   return TODO_OK;
 }
 
-TodoResult todo_find(const Todo todos[], size_t count, size_t id, size_t *pos)
+TodoResult todo_find(const TodoList *todos, size_t id, size_t *pos)
 {
-  if (todos == NULL || pos == NULL)
+  if (todos->data == NULL || pos == NULL)
   {
     return TODO_ERR_INVALID_ARGUMENT;
   }
-
-  if (count == 0)
+  if (todos->size == 0)
   {
     return TODO_ERR_EMPTY;
   }
-
-  for (size_t i = 0; i < count; i++)
+  for (size_t i = 0; i < todos->size; i++)
   {
-    if (todos[i].id == id)
+    if (todos->data[i].id == id)
     {
       *pos = i;
       return TODO_OK;
     }
   }
-
   return TODO_ERR_NOT_FOUND;
+}
+
+void todo_recalculate_next_id(TodoList *todos)
+{
+  if (todos->data == NULL || todos->size == 0)
+  {
+    return;
+  }
+  for (size_t i = 0; i < todos->size; i++)
+  {
+    if (todos->data[i].id == todos->next_id)
+      todos->next_id = todos->data[i].id + 1;
+  }
 }
