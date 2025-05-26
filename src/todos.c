@@ -6,6 +6,7 @@
 #include "errors.h"
 #include "print.h"
 #include "todo.h"
+#include "todo_filter.h"
 #include "tui.h"
 
 size_t global_id = 0;
@@ -15,6 +16,7 @@ size_t capacity = initial_capacity;
 int main(void)
 {
   TodoList *todos = todo_list_create(initial_capacity);
+  TodoList *todos_filtered = todo_list_create(1);
   if (!todos || !todos->data)
   {
     p_error("Failed to allocate memory for todos");
@@ -27,6 +29,7 @@ int main(void)
   {
     p_error("Unable to allocate required memory. Operation aborted");
     todo_list_destroy(&todos);
+    todo_list_destroy(&todos_filtered);
     return EXIT_FAILURE;
   }
   else if (todo_result == TODO_ERR_FILE)
@@ -43,7 +46,7 @@ int main(void)
   {
     TodoResult todo_result = TODO_NOTHING;
 
-    tui_print_todos(todos);
+    tui_print_todos(todos_filtered->size > 0 ? todos_filtered : todos);
     tui_print_menus();
 
     size_t choice = TUI_MENU_EXIT;
@@ -161,8 +164,10 @@ int main(void)
       todos->size = 0;
       todos->capacity = initial_capacity;
       todo_list_destroy(&todos);
+      todo_list_destroy(&todos_filtered);
       todos = todo_list_create(initial_capacity);
-      if (!todos || !todos->data)
+      todos_filtered = todo_list_create(1);
+      if (!todos || !todos->data || !todos_filtered || !todos_filtered->data)
       {
         p_error("Failed to allocate memory for todos.");
         return EXIT_FAILURE;
@@ -174,6 +179,38 @@ int main(void)
         continue;
       }
       break;
+    }
+    case TUI_MENU_FILTER_TODOS_STATUS_DONE:
+    {
+      todo_result = todo_list_filter(todo_is_done, todos, todos_filtered);
+      if (todo_result == TODO_OK)
+      {
+        print_success("Filtered todos with status 'done'.");
+        continue;
+      }
+      break;
+    }
+    case TUI_MENU_FILTER_TODOS_STATUS_NOT_DONE:
+    {
+      todo_result = todo_list_filter(todo_is_not_done, todos, todos_filtered);
+      if (todo_result == TODO_OK)
+      {
+        print_success("Filtered todos with status 'not done'.");
+        continue;
+      }
+      break;
+    }
+    case TUI_MENU_FILTER_TODOS_STATUS_ALL:
+    {
+      todo_list_destroy(&todos_filtered);
+      todos_filtered = todo_list_create(1);
+      if (!todos_filtered || !todos_filtered->data)
+      {
+        p_error("Failed to allocate memory for filtered todos.");
+        return EXIT_FAILURE;
+      }
+      print_success("Showing all todos.");
+      continue;
     }
     case TUI_MENU_EXIT:
     {
@@ -211,6 +248,7 @@ int main(void)
   }
 
   todo_list_destroy(&todos);
+  todo_list_destroy(&todos_filtered);
 
   return EXIT_SUCCESS;
 }

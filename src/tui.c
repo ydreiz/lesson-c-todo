@@ -13,6 +13,9 @@ void tui_print_menus(void)
   printf("4. Delete todo\n");
   printf("5. Save todos\n");
   printf("6. Load todos\n");
+  printf("7. Filter todos by status (done)\n");
+  printf("8. Filter todos by status (not done)\n");
+  printf("9. Show all todos\n");
   printf("0. Exit\n");
   printf("Enter your choice: ");
 }
