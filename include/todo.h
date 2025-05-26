@@ -47,6 +47,8 @@ TodoResult todo_save(const char *filename, const TodoList *todos);
 
 TodoResult todo_load(const char *filename, TodoList *todos);
 
+TodoResult todo_filter(const TodoList *src_todos, TodoList *dest_todos, bool done);
+
 TodoList *todo_list_create(size_t capacity);
 
 TodoResult todo_list_resize(TodoList *todos);

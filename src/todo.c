@@ -149,6 +149,31 @@ TodoResult todo_find(const TodoList *todos, size_t id, size_t *pos)
   return TODO_ERR_NOT_FOUND;
 }
 
+TodoResult todo_filter(const TodoList *src_todos, TodoList *dest_todos, bool done)
+{
+  if (!src_todos || !dest_todos || !src_todos->data || !dest_todos->data)
+  {
+    return TODO_ERR_INVALID_ARGUMENT;
+  }
+  dest_todos->size = 0;
+
+  for (size_t i = 0; i < src_todos->size; i++)
+  {
+    if (src_todos->data[i].done == done)
+    {
+      if (dest_todos->size >= dest_todos->capacity)
+      {
+        if (todo_list_resize(dest_todos) != TODO_OK)
+        {
+          return TODO_ERR_ALLOC;
+        }
+      }
+      dest_todos->data[dest_todos->size++] = src_todos->data[i];
+    }
+  }
+  return TODO_OK;
+}
+
 void todo_recalculate_next_id(TodoList *todos)
 {
   if (!todos || !todos->data || todos->size == 0)
