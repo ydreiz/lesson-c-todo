@@ -36,16 +36,20 @@ test: $(BUILD_DIR)/$(TEST_NAME)
 clean:
 	rm -rf $(BUILD_DIR)
 
-build_release:
+build/release:
 	cmake -B build -S . -D CMAKE_BUILD_TYPE=Release
 	cmake --build build
 
-build_debug:
+build/debug:
 	cmake -B build-debug -S . -D CMAKE_BUILD_TYPE=Debug
 	cmake --build build-debug
 
-run/relese: build_release
+build/win:
+	cmake -B build-win -S . -DCMAKE_TOOLCHAIN_FILE=toolchain-mingw.cmake
+	cmake --build build-win
+
+run/relese: build/release
 	./build/$(APP_NAME)
 
-run/debug: build_debug
+run/debug: build/debug
 	gdb build-debug/$(APP_NAME)
