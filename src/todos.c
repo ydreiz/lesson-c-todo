@@ -185,6 +185,7 @@ int main(void)
       todo_result = todo_list_filter(todo_is_done, todos, todos_filtered);
       if (todo_result == TODO_OK)
       {
+        todo_recalculate_next_id(todos_filtered);
         print_success("Filtered todos with status 'done'.");
         continue;
       }
@@ -195,6 +196,7 @@ int main(void)
       todo_result = todo_list_filter(todo_is_not_done, todos, todos_filtered);
       if (todo_result == TODO_OK)
       {
+        todo_recalculate_next_id(todos_filtered);
         print_success("Filtered todos with status 'not done'.");
         continue;
       }

@@ -33,11 +33,11 @@ void tui_print_todos(const TodoList *todos)
     Todo todo = todos->data[i];
     char *status_str = todo.done ? "[x]" : "[ ]";
 
-    if (todos->size < 10)
+    if (todos->next_id < 10)
     {
       printf("[%lu] %-50s %s\n", todo.id, todo.title, status_str);
     }
-    else if (todos->size >= 100)
+    else if (todos->next_id >= 100)
     {
       printf("[%3lu] %-48s %s\n", todo.id, todo.title, status_str);
     }
