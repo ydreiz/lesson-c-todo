@@ -16,7 +16,7 @@ size_t capacity = initial_capacity;
 int main(void)
 {
   TodoList *todos = todo_list_create(initial_capacity);
-  TodoList *todos_filtered = todo_list_create(1);
+  TodoList *todos_filtered = todo_list_create(initial_capacity);
   if (!todos || !todos->data)
   {
     p_error("Failed to allocate memory for todos");
@@ -205,7 +205,7 @@ int main(void)
     case TUI_MENU_FILTER_TODOS_STATUS_ALL:
     {
       todo_list_destroy(&todos_filtered);
-      todos_filtered = todo_list_create(1);
+      todos_filtered = todo_list_create(initial_capacity);
       if (!todos_filtered || !todos_filtered->data)
       {
         p_error("Failed to allocate memory for filtered todos.");

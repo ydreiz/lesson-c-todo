@@ -162,13 +162,12 @@ TodoResult todo_list_filter(bool (*fn)(const Todo todo), const TodoList *src_tod
   {
     if (fn(src_todos->data[i]))
     {
-      if (dest_todos->size >= dest_todos->capacity)
+      TodoResult res = todo_list_resize(dest_todos);
+      if (res != TODO_OK && res != TODO_NOTHING)
       {
-        if (todo_list_resize(dest_todos) != TODO_OK)
-        {
-          return TODO_ERR_ALLOC;
-        }
+        return TODO_ERR_ALLOC;
       }
+
       dest_todos->data[dest_todos->size++] = src_todos->data[i];
     }
   }
