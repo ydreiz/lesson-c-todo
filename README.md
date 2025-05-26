@@ -29,11 +29,11 @@ This is an educational project — a console TODO list written in C (C23), suppo
 ## PROJECT STRUCTURE
 
 ```sh
-lesson-c-todo
+todos-c
 ├── include
 │   ├── errors.h             # Header file declaring error codes and error handling utilities
 │   ├── print.h              # Header file declaring functions and utilities for formatted output and printing to the console
-│   └── test.h               # Header file declaring test-related functions
+│   ├── test.h               # Header file declaring test-related functions
 │   ├── todo.h               # Header file defining the Todo data structure and related declarations
 │   ├── tui.h                # Header file declaring UI-related functions (menus, input, output)
 ├── src
