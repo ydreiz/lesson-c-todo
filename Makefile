@@ -53,3 +53,7 @@ run/relese: build/release
 
 run/debug: build/debug
 	gdb build-debug/$(APP_NAME)
+
+run/test/debug: all test
+	gdb build-test/$(TEST_NAME)
+
