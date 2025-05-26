@@ -22,6 +22,7 @@ This is an educational project — a console TODO list written in C (C23), suppo
 - [x] Save todo list to `todos.txt` and load on startup
 - [x] Simple text menu interface
 - [x] Minimalistic, framework-free test runner for core logic (see TESTING below)
+- [x] Filter todos by status (done/not done)
 - [ ] No support for subtodo, categories, or deadlines — intentionally omitted for focus on the basics
 
 ---
@@ -35,6 +36,7 @@ todos-c
 │   ├── print.h              # Header file declaring functions and utilities for formatted output and printing to the console
 │   ├── test.h               # Header file declaring test-related functions
 │   ├── todo.h               # Header file defining the Todo data structure and related declarations
+│   ├── todo_filter.h        # Header file declaring functions for filtering todos
 │   ├── tui.h                # Header file declaring UI-related functions (menus, input, output)
 ├── src
 │   ├── errors.c             # Source file implementing error handling logic
@@ -42,6 +44,7 @@ todos-c
 │   ├── print.c              # Source file implementing formatted output and printing utilities for the console
 │   ├── tets.c               # Test program entry point and application logic
 │   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
+│   ├── todo_filter.c        # Source file implementing filtering logic for todos
 │   ├── todos.c              # Todos program entry point and application logic
 │   └── tui.c                # Source file implementing user interface functions
 ├── tests
@@ -124,6 +127,9 @@ make clean
    - Delete todo
    - Save todos
    - Load todos
+   - Filter todos is done
+   - Filter todos is not done
+   - Show all todos
    - Exit
 
 Todos are saved in the `id;title;done` format in a text file.
@@ -215,9 +221,8 @@ These constraints keep the codebase simple and educational, but also make it dif
 ## FUTURE IMPROVEMENTS
 
 - Add modular/unit tests (e.g., with CMocka)
-
 - Implement export/import in CSV, JSON, or other formats
-- Support for todo search, sort, and filter
+- Support for todo search, sort
 - Add todo categories, deadlines, and priorities
 - Multi-user and/or client-server support
 - Internationalization/localization
