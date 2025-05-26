@@ -60,6 +60,85 @@ bool test_todos_list_create_failure(void)
   return true;
 }
 
+bool test_todos_list_filtered_done(void)
+{
+  TodoList *todos = todo_list_create(100);
+  if (!todos || !todos->data)
+  {
+    todo_list_destroy(&todos);
+    return false;
+  }
+
+  _fill_stub_todos(todos, 100);
+
+  TodoList *filtered_todos = todo_list_create(50);
+  if (!filtered_todos || !filtered_todos->data)
+  {
+    todo_list_destroy(&todos);
+    todo_list_destroy(&filtered_todos);
+    return false;
+  }
+
+  TodoResult res = todo_filter(todos, filtered_todos, true);
+
+  ASSERT_TRUE(res == TODO_OK);
+  ASSERT_TRUE(filtered_todos->size == 50); // 50 todos should be done
+
+  todo_list_destroy(&todos);
+  todo_list_destroy(&filtered_todos);
+  return true;
+}
+
+bool test_todos_list_filtered_done_empty(void)
+{
+  TodoList *todos = todo_list_create(1);
+  if (!todos || !todos->data)
+  {
+    todo_list_destroy(&todos);
+    return false;
+  }
+
+  todos->size = 0; // Empty list
+
+  TodoList *filtered_todos = todo_list_create(1);
+  if (!filtered_todos || !filtered_todos->data)
+  {
+    todo_list_destroy(&todos);
+    todo_list_destroy(&filtered_todos);
+    return false;
+  }
+
+  TodoResult res = todo_filter(todos, filtered_todos, true);
+
+  ASSERT_TRUE(res == TODO_OK);
+  ASSERT_TRUE(filtered_todos->size == 0); // No todos should be done
+
+  todo_list_destroy(&todos);
+  todo_list_destroy(&filtered_todos);
+  return true;
+}
+
+bool test_todos_list_filtered_done_null(void)
+{
+  TodoList *todos = todo_list_create(1);
+  if (!todos || !todos->data)
+  {
+    todo_list_destroy(&todos);
+    return false;
+  }
+
+  todos->size = 0; // Empty list
+
+  TodoList *filtered_todos = NULL; // Null pointer
+
+  TodoResult res = todo_filter(todos, filtered_todos, true);
+
+  ASSERT_TRUE(res == TODO_ERR_INVALID_ARGUMENT);
+
+  todo_list_destroy(&todos);
+  return true;
+}
+
 bool test_add_todo_increases_count(void)
 {
   TodoList *todos = todo_list_create(2);

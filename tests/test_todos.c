@@ -5,6 +5,9 @@
 bool test_todos_list_create(void);
 bool test_todos_list_create_null(void);
 bool test_todos_list_create_failure(void);
+bool test_todos_list_filtered_done(void);
+bool test_todos_list_filtered_done_empty(void); // TODO:
+bool test_todos_list_filtered_done_null(void);  // TODO:
 
 bool test_add_todo_increases_count(void);
 bool test_add_todo_failure_realloc(void);
@@ -55,6 +58,9 @@ int main(void)
   run_test("Todos List Create", test_todos_list_create);
   run_test("Todos List Create Null", test_todos_list_create_null);
   run_test("Todos List Create Failure", test_todos_list_create_failure);
+  run_test("Todos List Filtered Done", test_todos_list_filtered_done);
+  run_test("Todos List Filtered Done Empty", test_todos_list_filtered_done_empty);
+  run_test("Todos List Filtered Done Null", test_todos_list_filtered_done_null);
 
   run_test("Add Todo increases count", test_add_todo_increases_count);
   run_test("Add Todo invalid realloc", test_add_todo_failure_realloc);
