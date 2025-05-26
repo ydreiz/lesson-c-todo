@@ -55,6 +55,6 @@ void todo_list_destroy(TodoList **todos);
 
 void todo_recalculate_next_id(TodoList *todos);
 
-TodoResult todo_list_filter(const TodoList *src_todos, TodoList *dest_todos, bool done);
+TodoResult todo_list_filter(bool (*fn)(const Todo todo), const TodoList *src_todos, TodoList *dest_todos);
 
 #endif // !TODO_H

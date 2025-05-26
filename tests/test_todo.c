@@ -6,6 +6,7 @@
 
 #include "test.h"
 #include "todo.h"
+#include "todo_filter.h"
 
 void _fill_stub_todos(TodoList *todos, size_t size)
 {
@@ -79,7 +80,7 @@ bool test_todos_list_filtered_done(void)
     return false;
   }
 
-  TodoResult res = todo_list_filter(todos, filtered_todos, true);
+  TodoResult res = todo_list_filter(todo_is_done, todos, filtered_todos);
 
   ASSERT_TRUE(res == TODO_OK);
   ASSERT_TRUE(filtered_todos->size == 50); // 50 todos should be done
@@ -108,7 +109,7 @@ bool test_todos_list_filtered_done_empty(void)
     return false;
   }
 
-  TodoResult res = todo_list_filter(todos, filtered_todos, true);
+  TodoResult res = todo_list_filter(todo_is_done, todos, filtered_todos);
 
   ASSERT_TRUE(res == TODO_OK);
   ASSERT_TRUE(filtered_todos->size == 0); // No todos should be done
@@ -131,7 +132,7 @@ bool test_todos_list_filtered_done_null(void)
 
   TodoList *filtered_todos = NULL; // Null pointer
 
-  TodoResult res = todo_list_filter(todos, filtered_todos, true);
+  TodoResult res = todo_list_filter(todo_is_done, todos, filtered_todos);
 
   ASSERT_TRUE(res == TODO_ERR_INVALID_ARGUMENT);
 

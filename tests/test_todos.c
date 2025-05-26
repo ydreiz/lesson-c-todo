@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "test.h"
@@ -6,8 +7,8 @@ bool test_todos_list_create(void);
 bool test_todos_list_create_null(void);
 bool test_todos_list_create_failure(void);
 bool test_todos_list_filtered_done(void);
-bool test_todos_list_filtered_done_empty(void); // TODO:
-bool test_todos_list_filtered_done_null(void);  // TODO:
+bool test_todos_list_filtered_done_empty(void);
+bool test_todos_list_filtered_done_null(void);
 
 bool test_add_todo_increases_count(void);
 bool test_add_todo_failure_realloc(void);

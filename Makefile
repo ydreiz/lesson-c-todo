@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -std=c23 -Iinclude -g
 
 SRC_DIR = src
 TEST_DIR = tests
-BUILD_DIR = build_test
+BUILD_DIR = build-test
 
 APP_NAME = todos
 TEST_NAME = tests_runner

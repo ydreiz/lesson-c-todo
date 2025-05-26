@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -149,7 +150,7 @@ TodoResult todo_find(const TodoList *todos, size_t id, size_t *pos)
   return TODO_ERR_NOT_FOUND;
 }
 
-TodoResult todo_list_filter(const TodoList *src_todos, TodoList *dest_todos, bool done)
+TodoResult todo_list_filter(bool (*fn)(const Todo todo), const TodoList *src_todos, TodoList *dest_todos)
 {
   if (!src_todos || !dest_todos || !src_todos->data || !dest_todos->data)
   {
@@ -159,7 +160,7 @@ TodoResult todo_list_filter(const TodoList *src_todos, TodoList *dest_todos, boo
 
   for (size_t i = 0; i < src_todos->size; i++)
   {
-    if (src_todos->data[i].done == done)
+    if (fn(src_todos->data[i]))
     {
       if (dest_todos->size >= dest_todos->capacity)
       {
