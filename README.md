@@ -7,6 +7,7 @@
 This is an educational project — a console TODO list written in C (C23), supporting basic todo management operations: adding, toggling status, deleting, saving, and loading from a file.
 
 **Why C?**
+
 - Minimal dependencies, maximum memory control.
 - Educational value: the project demonstrates struct usage, file operations, and user input handling at a low level.
 
@@ -15,6 +16,7 @@ This is an educational project — a console TODO list written in C (C23), suppo
 ## FEATURES
 
 - [x] Add todo with a title, completion status, and unique ID
+- [x] Edit title of existing todo
 - [x] Toggle todo status (done/not done)
 - [x] Delete todos by ID
 - [x] Save todo list to `todos.txt` and load on startup
@@ -29,15 +31,19 @@ This is an educational project — a console TODO list written in C (C23), suppo
 ```sh
 lesson-c-todo
 ├── include
-│   ├── todo.h               # Header file defining the Todo data structure and related declarations
-│   ├── ui.h                 # Header file declaring UI-related functions (menus, input, output)
+│   ├── errors.h             # Header file declaring error codes and error handling utilities
+│   ├── print.h              # Header file declaring functions and utilities for formatted output and printing to the console
 │   └── test.h               # Header file declaring test-related functions
+│   ├── todo.h               # Header file defining the Todo data structure and related declarations
+│   ├── tui.h                # Header file declaring UI-related functions (menus, input, output)
 ├── src
+│   ├── errors.c             # Source file implementing error handling logic
 │   ├── file.c               # Source file handling file operations (loading, saving todos)
-│   ├── main.c               # Main program entry point and application logic
-│   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
+│   ├── print.c              # Source file implementing formatted output and printing utilities for the console
 │   ├── tets.c               # Test program entry point and application logic
-│   └── ui.c                 # Source file implementing user interface functions
+│   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
+│   ├── todos.c              # Todos program entry point and application logic
+│   └── tui.c                # Source file implementing user interface functions
 ├── tests
 │   ├── test_todo.c          # Manual tests, entry point is main()
 │   └── ...                  # Additional test files
@@ -59,12 +65,18 @@ lesson-c-todo
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ./build/todos
+# Or
+make build/run
 ```
+
 For debugging:
+
 ```sh
 cmake -B build-debug -S . -DCMAKE_BUILD_TYPE=Debug
 cmake --build build-debug
 gdb build-debug/todos
+# Or
+make build/run
 ```
 
 ### Windows (cross-compilation via MinGW)
@@ -72,6 +84,8 @@ gdb build-debug/todos
 ```sh
 cmake -B build-win -S . -DCMAKE_TOOLCHAIN_FILE=toolchain-mingw.cmake
 cmake --build build-win
+# Or
+make build/win
 ```
 
 ### Quick build without CMake
@@ -104,13 +118,13 @@ make clean
 
 1. Run the program
 2. Follow the menu:
-    - Add todo
-    - Toggle todo status
-    - Edit title
-    - Delete todo
-    - Save todos
-    - Load todos
-    - Exit
+   - Add todo
+   - Toggle todo status
+   - Edit title
+   - Delete todo
+   - Save todos
+   - Load todos
+   - Exit
 
 Todos are saved in the `id;title;done` format in a text file.
 
@@ -146,6 +160,7 @@ gdb todos_debug
 ```
 
 Typical GDB workflow:
+
 - `break main` — Set a breakpoint at main().
 - `run` — Start the program.
 - `next` / `step` — Step through code line by line.
@@ -157,14 +172,14 @@ Typical GDB workflow:
 ### 3. Memory Leak and Undefined Behavior Detection
 
 - Memory leak check:
-    ```sh
-    valgrind --leak-check=full --show-leak-kinds=all build-debug/todos
-    ```
+  ```sh
+  valgrind --leak-check=full --show-leak-kinds=all build-debug/todos
+  ```
 - Run with AddressSanitizer:
-    ```sh
-    clang -g -O1 -fsanitize=address -fno-omit-frame-pointer -Iinclude src/*.c -o todos_asan
-    ./todos_asan
-    ```
+  ```sh
+  clang -g -O1 -fsanitize=address -fno-omit-frame-pointer -Iinclude src/*.c -o todos_asan
+  ./todos_asan
+  ```
 
 ---
 
