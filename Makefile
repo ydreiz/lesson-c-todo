@@ -36,3 +36,16 @@ test: $(BUILD_DIR)/$(TEST_NAME)
 clean:
 	rm -rf $(BUILD_DIR)
 
+build_release:
+	cmake -B build -S . -D CMAKE_BUILD_TYPE=Release
+	cmake --build build
+
+build_debug:
+	cmake -B build-debug -S . -D CMAKE_BUILD_TYPE=Debug
+	cmake --build build-debug
+
+run/relese: build_release
+	./build/$(APP_NAME)
+
+run/debug: build_debug
+	gdb build-debug/$(APP_NAME)
