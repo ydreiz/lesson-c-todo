@@ -42,6 +42,14 @@ bool test_tui_input_number_eof(void);
 
 bool test_tui_print_todos(void);
 
+bool test_error_enable_diable_logging(void);
+bool test_error_print_error_enabled(void);
+bool test_error_print_error_disabled(void);
+bool test_error_print_warn_enabled(void);
+bool test_error_print_warn_disabled(void);
+bool test_error_print_info_enabled(void);
+bool test_error_print_info_disabled(void);
+
 int main(void)
 {
   run_test("Todos List Create", test_todos_list_create);
@@ -83,6 +91,13 @@ int main(void)
   run_test("TUI Input Number EOF", test_tui_input_number_eof);
 
   run_test("TUI Print Todos", test_tui_print_todos);
+
+  run_test("ERROR toggle logging", test_error_enable_diable_logging);
+  run_test("ERROR print error enabled", test_error_print_error_enabled);
+  run_test("ERROR print error disabled", test_error_print_error_disabled);
+  run_test("ERROR print warn enabled", test_error_print_warn_enabled);
+  run_test("ERROR print warn disabled", test_error_print_warn_disabled);
+  run_test("ERROR print info enabled", test_error_print_info_enabled);
 
   return EXIT_SUCCESS;
 }
