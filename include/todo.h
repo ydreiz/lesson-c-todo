@@ -47,8 +47,6 @@ TodoResult todo_save(const char *filename, const TodoList *todos);
 
 TodoResult todo_load(const char *filename, TodoList *todos);
 
-TodoResult todo_filter(const TodoList *src_todos, TodoList *dest_todos, bool done);
-
 TodoList *todo_list_create(size_t capacity);
 
 TodoResult todo_list_resize(TodoList *todos);
@@ -56,5 +54,7 @@ TodoResult todo_list_resize(TodoList *todos);
 void todo_list_destroy(TodoList **todos);
 
 void todo_recalculate_next_id(TodoList *todos);
+
+TodoResult todo_list_filter(const TodoList *src_todos, TodoList *dest_todos, bool done);
 
 #endif // !TODO_H

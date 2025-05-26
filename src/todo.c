@@ -149,7 +149,7 @@ TodoResult todo_find(const TodoList *todos, size_t id, size_t *pos)
   return TODO_ERR_NOT_FOUND;
 }
 
-TodoResult todo_filter(const TodoList *src_todos, TodoList *dest_todos, bool done)
+TodoResult todo_list_filter(const TodoList *src_todos, TodoList *dest_todos, bool done)
 {
   if (!src_todos || !dest_todos || !src_todos->data || !dest_todos->data)
   {
