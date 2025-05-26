@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "errors.h"
 #include "print.h"
 #include "todo.h"
 #include "tui.h"
@@ -16,7 +17,7 @@ int main(void)
   TodoList *todos = todo_list_create(initial_capacity);
   if (!todos || !todos->data)
   {
-    print_error("Failed to allocate memory for todos");
+    p_error("Failed to allocate memory for todos");
     return EXIT_FAILURE;
   }
 
@@ -24,7 +25,7 @@ int main(void)
   TodoResult todo_result = todo_load(TODO_FILE, todos);
   if (todo_result == TODO_ERR_ALLOC)
   {
-    print_error("Unable to allocate required memory. Operation aborted");
+    p_error("Unable to allocate required memory. Operation aborted");
     todo_list_destroy(&todos);
     return EXIT_FAILURE;
   }
@@ -163,7 +164,7 @@ int main(void)
       todos = todo_list_create(initial_capacity);
       if (!todos || !todos->data)
       {
-        print_error("Failed to allocate memory for todos.");
+        p_error("Failed to allocate memory for todos.");
         return EXIT_FAILURE;
       }
 
@@ -184,7 +185,7 @@ int main(void)
     if (todo_result == TODO_ERR_ALLOC)
     {
       free(todos);
-      print_error("Unable to allocate required memory. Operation aborted.");
+      p_error("Unable to allocate required memory. Operation aborted.");
       return EXIT_FAILURE;
     }
     else if (todo_result == TODO_ERR_NOT_FOUND)
