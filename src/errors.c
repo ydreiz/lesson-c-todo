@@ -1,7 +1,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "error.h"
+#include "errors.h"
 
 static int logging_enabled = true;
 

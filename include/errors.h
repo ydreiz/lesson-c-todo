@@ -1,5 +1,7 @@
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef ERRORS_H
+#define ERRORS_H
+
+#include <stdbool.h>
 
 typedef enum
 {
@@ -16,4 +18,4 @@ void p_info(const char *msg);
 void enable_logging(bool enable);
 bool is_logging_enabled(void);
 
-#endif // !ERROR_H
+#endif // !ERRORS_H

@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "error.h"
+#include "errors.h"
 #include "test.h"
 
 static void capture_stderr(void (*func)(const char *msg), const char *msg, char *out_buf, size_t buf_size)
