@@ -16,10 +16,17 @@ size_t capacity = initial_capacity;
 int main(void)
 {
   TodoList *todos = todo_list_create(initial_capacity);
-  TodoList *todos_filtered = todo_list_create(initial_capacity);
   if (!todos || !todos->data)
   {
     p_error("Failed to allocate memory for todos");
+    return EXIT_FAILURE;
+  }
+
+  TodoList *todos_filtered = todo_list_create(initial_capacity);
+  if (!todos_filtered || !todos_filtered->data)
+  {
+    p_error("Failed to allocate memory for filtered todos");
+    todo_list_destroy(&todos);
     return EXIT_FAILURE;
   }
 
@@ -185,7 +192,6 @@ int main(void)
       todo_result = todo_list_filter(todo_is_done, todos, todos_filtered);
       if (todo_result == TODO_OK)
       {
-        todo_recalculate_next_id(todos_filtered);
         print_success("Filtered todos with status 'done'.");
         continue;
       }
@@ -196,7 +202,6 @@ int main(void)
       todo_result = todo_list_filter(todo_is_not_done, todos, todos_filtered);
       if (todo_result == TODO_OK)
       {
-        todo_recalculate_next_id(todos_filtered);
         print_success("Filtered todos with status 'not done'.");
         continue;
       }

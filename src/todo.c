@@ -158,6 +158,7 @@ TodoResult todo_list_filter(bool (*fn)(const Todo todo), const TodoList *src_tod
   }
   dest_todos->size = 0;
 
+  size_t max_id = 1;
   for (size_t i = 0; i < src_todos->size; i++)
   {
     if (fn(src_todos->data[i]))
@@ -169,8 +170,16 @@ TodoResult todo_list_filter(bool (*fn)(const Todo todo), const TodoList *src_tod
       }
 
       dest_todos->data[dest_todos->size++] = src_todos->data[i];
+      if (src_todos->data[i].id > max_id)
+      {
+        max_id = src_todos->data[i].id;
+      }
     }
   }
+
+  // INFO: Used only for drawing tasks, affects indentation within the id
+  dest_todos->next_id = max_id + 1;
+
   return TODO_OK;
 }
 
