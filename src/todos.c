@@ -7,6 +7,7 @@
 #include "print.h"
 #include "todo.h"
 #include "todo_filter.h"
+#include "todo_sort.h"
 #include "tui.h"
 
 size_t global_id = 0;
@@ -15,6 +16,8 @@ size_t capacity = initial_capacity;
 
 int main(void)
 {
+  tui_clear_screen();
+
   TodoList *todos = todo_list_create(initial_capacity);
   if (!todos || !todos->data)
   {
@@ -49,19 +52,20 @@ int main(void)
   }
 
   int running = 1;
+  size_t choice = TUI_MENU_EXIT;
   while (running)
   {
+    tui_clear_screen();
+
     TodoResult todo_result = TODO_NOTHING;
 
-    tui_print_todos(todos_filtered->size > 0 ? todos_filtered : todos);
+    tui_print_todos(todos);
     tui_print_menus();
 
-    size_t choice = TUI_MENU_EXIT;
     tui_result = tui_input_number(&choice, NULL);
     switch (choice)
     {
     case TUI_MENU_ADD_TODO:
-    {
       char title[100];
       tui_result = tui_input_text(title, sizeof(title), "Enter title: ");
       if (tui_result == TUI_ERR_INVALID_INPUT)
@@ -88,9 +92,7 @@ int main(void)
       }
 
       break;
-    }
     case TUI_MENU_TOGGLE_STATUS:
-    {
       size_t id = 0;
       if ((tui_result = tui_input_number(&id, "Enter ID to toggle status: ")) != TUI_OK)
       {
@@ -107,7 +109,6 @@ int main(void)
         }
       }
       break;
-    }
     case TUI_MENU_EDIT_TITLE:
     {
       size_t id = 0;
@@ -158,16 +159,13 @@ int main(void)
       break;
     }
     case TUI_MENU_SAVE_TODOS:
-    {
       if ((todo_result = todo_save(TODO_FILE, todos)) == TODO_OK)
       {
         print_success("Todos saved successfully.");
         continue;
       }
       break;
-    }
     case TUI_MENU_LOAD_TODOS:
-    {
       todos->size = 0;
       todos->capacity = initial_capacity;
       todo_list_destroy(&todos);
@@ -182,53 +180,96 @@ int main(void)
 
       if ((todo_result = todo_load(TODO_FILE, todos)) == TODO_OK)
       {
+        todo_recalculate_next_id(todos);
         print_success("Todos loaded successfully.");
         continue;
       }
       break;
-    }
-    case TUI_MENU_FILTER_TODOS_STATUS_DONE:
+    case TUI_MENU_FILTER:
     {
-      todo_result = todo_list_filter(todo_is_done, todos, todos_filtered);
-      if (todo_result == TODO_OK)
+      TuiResult tui_result = TUI_OK;
+      TodoResult todo_result = TODO_OK;
+
+      int filter_running = 1;
+      size_t filter_choice = TIU_MENU_FILTER_NOTHING;
+      while (filter_running)
       {
-        print_success("Filtered todos with status 'done'.");
-        continue;
+        tui_clear_screen();
+        tui_print_todos(todos_filtered->size ? todos_filtered : todos);
+        tui_print_menus_fileter();
+
+        tui_result = tui_input_number(&filter_choice, NULL);
+        switch (filter_choice)
+        {
+        case TUI_MENU_FILTER_DONE:
+          todo_result = todo_list_filter(todo_is_done, todos, todos_filtered);
+          break;
+        case TUI_MENU_FILTER_NOT_DONE:
+          todo_result = todo_list_filter(todo_is_not_done, todos, todos_filtered);
+          break;
+        case TUI_MENU_FILTER_ALL:
+          todo_list_destroy(&todos_filtered);
+          todos_filtered = todo_list_create(initial_capacity);
+          if (!todos_filtered || !todos_filtered->data)
+          {
+            p_error("Failed to allocate memory for filtered todos.");
+            return EXIT_FAILURE;
+          }
+          break;
+        case TUI_MENU_FILTER_EXIT:
+          filter_running = 0;
+          break;
+        }
       }
       break;
     }
-    case TUI_MENU_FILTER_TODOS_STATUS_NOT_DONE:
+    case TUI_MENU_SORT:
     {
-      todo_result = todo_list_filter(todo_is_not_done, todos, todos_filtered);
-      if (todo_result == TODO_OK)
+      TuiResult tui_result = TUI_OK;
+
+      int sort_running = 1;
+      size_t sort_choice = TUI_MENU_SORT_NOTHING;
+      while (sort_running)
       {
-        print_success("Filtered todos with status 'not done'.");
-        continue;
+        tui_clear_screen();
+        tui_print_todos(todos);
+        tui_print_menus_sort();
+
+        tui_result = tui_input_number(&sort_choice, NULL);
+        switch (sort_choice)
+        {
+        case TUI_MENU_SORT_ID_ASC:
+          todo_list_sort(todo_compare_id_asc, todos);
+          break;
+        case TUI_MENU_SORT_ID_DESC:
+          todo_list_sort(todo_compare_id_desc, todos);
+          break;
+        case TUI_MENU_SORT_STATUS_ASC:
+          todo_list_sort(todo_compare_status_asc, todos);
+          break;
+        case TUI_MENU_SORT_STATUS_DESC:
+          todo_list_sort(todo_compare_status_desc, todos);
+          break;
+        case TUI_MENU_SORT_TITLE_ASC:
+          todo_list_sort(todo_compare_title_asc, todos);
+          break;
+        case TUI_MENU_SORT_TITLE_DESC:
+          todo_list_sort(todo_compare_title_desc, todos);
+          break;
+        case TUI_MENU_SORT_EXIT:
+          sort_running = 0;
+          break;
+        }
       }
       break;
-    }
-    case TUI_MENU_FILTER_TODOS_STATUS_ALL:
-    {
-      todo_list_destroy(&todos_filtered);
-      todos_filtered = todo_list_create(initial_capacity);
-      if (!todos_filtered || !todos_filtered->data)
-      {
-        p_error("Failed to allocate memory for filtered todos.");
-        return EXIT_FAILURE;
-      }
-      print_success("Showing all todos.");
-      continue;
     }
     case TUI_MENU_EXIT:
-    {
       running = 0;
       break;
-    }
     }
 
     if (todo_result == TODO_ERR_ALLOC)
     {
-      free(todos);
       p_error("Unable to allocate required memory. Operation aborted.");
       return EXIT_FAILURE;
     }
@@ -256,6 +297,7 @@ int main(void)
 
   todo_list_destroy(&todos);
   todo_list_destroy(&todos_filtered);
+  tui_clear_screen();
 
   return EXIT_SUCCESS;
 }

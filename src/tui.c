@@ -13,10 +13,32 @@ void tui_print_menus(void)
   printf("4. Delete todo\n");
   printf("5. Save todos\n");
   printf("6. Load todos\n");
-  printf("7. Filter todos by status (done)\n");
-  printf("8. Filter todos by status (not done)\n");
-  printf("9. Show all todos\n");
+  printf("7. Filter todos\n");
+  printf("8. Sort todos\n");
   printf("0. Exit\n");
+  printf("Enter your choice: ");
+}
+
+void tui_print_menus_fileter(void)
+{
+  printf("\nFilter by:\n");
+  printf("1. Status (Done)\n");
+  printf("2. Status (Not done)\n");
+  printf("3. Show all todos\n");
+  printf("0. Back to main menu\n");
+  printf("Enter your choice: ");
+}
+
+void tui_print_menus_sort(void)
+{
+  printf("\nSort by:\n");
+  printf("1. ID (asc)\n");
+  printf("2. ID (desc)\n");
+  printf("3. Status (asc)\n");
+  printf("4. Status (desc)\n");
+  printf("5. Title (asc)\n");
+  printf("6. Title (desc)\n");
+  printf("0. Back to main menu\n");
   printf("Enter your choice: ");
 }
 
@@ -96,3 +118,5 @@ void tui_normolized_stdin()
   while ((c = getchar()) != '\n' && c != EOF)
     ;
 }
+
+void tui_clear_screen() { printf("\033[H\033[J"); }

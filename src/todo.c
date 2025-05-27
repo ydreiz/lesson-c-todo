@@ -183,6 +183,15 @@ TodoResult todo_list_filter(bool (*fn)(const Todo todo), const TodoList *src_tod
   return TODO_OK;
 }
 
+void todo_list_sort(int (*cmp)(const void *, const void *), TodoList *todos)
+{
+  if (!todos || !todos->data || todos->size == 0)
+  {
+    return;
+  }
+  qsort(todos->data, todos->size, sizeof(Todo), cmp);
+}
+
 void todo_recalculate_next_id(TodoList *todos)
 {
   if (!todos || !todos->data || todos->size == 0)

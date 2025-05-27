@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 #define TODO_FILE "todos.txt"
 
@@ -56,5 +57,7 @@ void todo_list_destroy(TodoList **todos);
 void todo_recalculate_next_id(TodoList *todos);
 
 TodoResult todo_list_filter(bool (*fn)(const Todo todo), const TodoList *src_todos, TodoList *dest_todos);
+
+void todo_list_sort(int (*cmp)(const void *, const void *), TodoList *todos);
 
 #endif // !TODO_H
