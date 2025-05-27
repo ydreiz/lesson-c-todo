@@ -20,9 +20,10 @@ This is an educational project — a console TODO list written in C (C23), suppo
 - [x] Toggle todo status (done/not done)
 - [x] Delete todos by ID
 - [x] Save todo list to `todos.txt` and load on startup
-- [x] Simple text menu interface
-- [x] Minimalistic, framework-free test runner for core logic (see TESTING below)
 - [x] Filter todos by status (done/not done)
+- [x] Sort todos by ID, status and title (case-insensitive)
+- [x] Minimalistic, framework-free test runner for core logic (see TESTING below)
+- [x] Simple text menu interface
 - [ ] No support for subtodo, categories, or deadlines — intentionally omitted for focus on the basics
 
 ---
@@ -35,16 +36,18 @@ todos-c
 │   ├── errors.h             # Header file declaring error codes and error handling utilities
 │   ├── print.h              # Header file declaring functions and utilities for formatted output and printing to the console
 │   ├── test.h               # Header file declaring test-related functions
-│   ├── todo.h               # Header file defining the Todo data structure and related declarations
 │   ├── todo_filter.h        # Header file declaring functions for filtering todos
+│   ├── todo_sort.h          # Header file declaring functions for sorting todos
+│   ├── todo.h               # Header file defining the Todo data structure and related declarations
 │   ├── tui.h                # Header file declaring UI-related functions (menus, input, output)
 ├── src
 │   ├── errors.c             # Source file implementing error handling logic
 │   ├── file.c               # Source file handling file operations (loading, saving todos)
 │   ├── print.c              # Source file implementing formatted output and printing utilities for the console
 │   ├── tets.c               # Test program entry point and application logic
-│   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
 │   ├── todo_filter.c        # Source file implementing filtering logic for todos
+│   ├── todo_sort.c          # Source file implementing sorting logic for todos
+│   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
 │   ├── todos.c              # Todos program entry point and application logic
 │   └── tui.c                # Source file implementing user interface functions
 ├── tests
@@ -79,7 +82,7 @@ cmake -B build-debug -S . -DCMAKE_BUILD_TYPE=Debug
 cmake --build build-debug
 gdb build-debug/todos
 # Or
-make build/run
+make build/debug
 ```
 
 ### Windows (cross-compilation via MinGW)
@@ -125,11 +128,10 @@ make clean
    - Toggle todo status
    - Edit title
    - Delete todo
+   - Filter todos
+   - Sort todos
    - Save todos
    - Load todos
-   - Filter todos is done
-   - Filter todos is not done
-   - Show all todos
    - Exit
 
 Todos are saved in the `id;title;done` format in a text file.
@@ -208,7 +210,7 @@ If future maintainability or collaboration is a goal, consider migrating to a re
 
 ## LIMITATIONS & CRITICAL VIEW
 
-- **No search, sort, categories, or deadlines:** Only basic todo management is supported. This limits practical applicability for complex workflows.
+- **No search, categories, or deadlines:** Only basic todo management is supported. This limits practical applicability for complex workflows.
 - **Manual, minimal test suite:** Testing is limited and not automated; coverage is likely incomplete, and CI/CD is absent.
 - **No localization or extended UI:** Only a basic English text menu is supported.
 - **No concurrency or multi-user support:** Only single-user, single-process operation.
@@ -222,7 +224,7 @@ These constraints keep the codebase simple and educational, but also make it dif
 
 - Add modular/unit tests (e.g., with CMocka)
 - Implement export/import in CSV, JSON, or other formats
-- Support for todo search, sort
+- Support for todo search
 - Add todo categories, deadlines, and priorities
 - Multi-user and/or client-server support
 - Internationalization/localization

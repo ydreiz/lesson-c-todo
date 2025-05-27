@@ -11,10 +11,10 @@ void tui_print_menus(void)
   printf("2. Toggle todo status\n");
   printf("3. Edit title\n");
   printf("4. Delete todo\n");
-  printf("5. Save todos\n");
-  printf("6. Load todos\n");
-  printf("7. Filter todos\n");
-  printf("8. Sort todos\n");
+  printf("5. Filter todos\n");
+  printf("6. Sort todos\n");
+  printf("7. Save todos\n");
+  printf("8. Load todos\n");
   printf("0. Exit\n");
   printf("Enter your choice: ");
 }
