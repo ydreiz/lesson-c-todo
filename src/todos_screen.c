@@ -24,6 +24,7 @@ void screen_todo_add(TodoList *todos, TodoResult *todo_result)
   else if (tui_result == TUI_ERR_EMPTY_INPUT)
   {
     print_notify("Record not added as no title was entered.");
+    return;
   }
 
   u_string status_str[2];
