@@ -103,7 +103,7 @@ void screen_todo_filter(const TodoList *todos)
   }
 
   int filter_running = 1;
-  size_t filter_choice = TIU_MENU_FILTER_NOTHING;
+  size_t filter_choice = TUI_MENU_FILTER_NITHING;
   while (filter_running)
   {
     tui_clear_screen();
