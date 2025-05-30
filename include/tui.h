@@ -3,7 +3,8 @@
 
 #include <stddef.h>
 
-#include "todo.h"
+#include "todo_common.h"
+#include "utils.h"
 
 typedef enum
 {
@@ -11,11 +12,11 @@ typedef enum
   TUI_MENU_ADD_TODO = 1,
   TUI_MENU_TOGGLE_STATUS = 2,
   TUI_MENU_EDIT_TITLE = 3,
-  TUI_MENU_LOAD_TODOS = 4,
+  TUI_MENU_DELETE_TODO = 4,
   TUI_MENU_FILTER = 5,
-  TUI_MENU_DELETE_TODO = 6,
+  TUI_MENU_SORT = 6,
   TUI_MENU_SAVE_TODOS = 7,
-  TUI_MENU_SORT = 8,
+  TUI_MENU_LOAD_TODOS = 8,
   TUI_MENU_EXIT = 0,
 } TuiMenu;
 
@@ -58,7 +59,7 @@ void tui_print_menus_sort(void);
 
 void tui_print_todos(const TodoList *todos);
 
-TuiResult tui_input_text(char *buf, int size, const char *prompt);
+TuiResult tui_input_text(u_string *buf, int size, const char *prompt);
 
 TuiResult tui_input_number(size_t *choise, const char *prompt);
 

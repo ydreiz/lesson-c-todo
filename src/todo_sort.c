@@ -1,6 +1,6 @@
+#include <stdlib.h>
 #include <string.h>
 
-#include "todo.h"
 #include "todo_sort.h"
 
 int todo_compare_id_asc(const void *a, const void *b)
@@ -26,3 +26,12 @@ int todo_compare_title_asc(const void *a, const void *b)
   return strcmp(todo_a->title, todo_b->title);
 }
 int todo_compare_title_desc(const void *a, const void *b) { return -todo_compare_title_asc(a, b); }
+
+void todo_list_sort(int (*cmp)(const void *, const void *), TodoList *todos)
+{
+  if (!todos || !todos->data || todos->size == 0)
+  {
+    return;
+  }
+  qsort(todos->data, todos->size, sizeof(Todo), cmp);
+}

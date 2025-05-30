@@ -5,47 +5,12 @@
 #include <string.h>
 
 #include "test.h"
-#include "todo.h"
+#include "todo_list.h"
 #include "tui.h"
 
-void _fill_stub_todos(TodoList *todos, size_t size);
-
-static FILE *create_tmpfile_with_content(const char *content)
-{
-  FILE *tmp = tmpfile();
-  if (!tmp)
-  {
-    perror("tmpfile");
-    return NULL;
-  }
-
-  if (content)
-  {
-    fputs(content, tmp);
-    fflush(tmp);
-    rewind(tmp);
-  }
-
-  return tmp;
-}
-
-static void capture_stdout(void (*func)(const TodoList *), const TodoList *todos, char *out_buf, size_t buf_size)
-{
-  FILE *old_stdout = stdout;
-  FILE *tmp = tmpfile();
-  assert(tmp != NULL);
-
-  stdout = tmp;
-  func(todos);
-  fflush(tmp);
-
-  rewind(tmp);
-  size_t n = fread(out_buf, 1, buf_size - 1, tmp);
-  out_buf[n] = '\0';
-
-  fclose(tmp);
-  stdout = old_stdout;
-}
+void fill_stub_todos(TodoList *todos, size_t size);
+void capture_stdout(void (*func)(const TodoList *), const TodoList *todos, char *out_buf, size_t buf_size);
+FILE *create_tmpfile_with_content(const char *content);
 
 bool test_tui_input_text_successfuly(void)
 {
@@ -175,13 +140,13 @@ bool test_tui_print_todos()
   char output[8192];
 
   TodoList *todos_small = todo_list_create(3);
-  _fill_stub_todos(todos_small, 2);
+  fill_stub_todos(todos_small, 2);
 
   TodoList *todos_medium = todo_list_create(10);
-  _fill_stub_todos(todos_medium, 10);
+  fill_stub_todos(todos_medium, 10);
 
   TodoList *todos_large = todo_list_create(100);
-  _fill_stub_todos(todos_large, 100);
+  fill_stub_todos(todos_large, 100);
 
   // Test 1: NULL and 0 count (nothing should be output)
   capture_stdout(tui_print_todos, NULL, output, sizeof(output));
@@ -210,9 +175,22 @@ bool test_tui_print_todos()
   ASSERT_TRUE(strstr(output, "[100]") != NULL);
   ASSERT_TRUE(strstr(output, "Total todos: 100") != NULL);
 
-  todo_list_destroy(&todos_small);
-  todo_list_destroy(&todos_medium);
-  todo_list_destroy(&todos_large);
+  todo_list_free(&todos_small);
+  todo_list_free(&todos_medium);
+  todo_list_free(&todos_large);
 
   return true;
+}
+
+void run_test_tui(void)
+{
+  printf("==== TUI ====\n");
+
+  run_test("Input text successfuly", test_tui_input_text_successfuly);
+  run_test("Input text empty", test_tui_input_text_empty);
+  run_test("Input text EOF", test_tui_input_text_eof);
+  run_test("Input number successfuly", test_tui_input_number_successfuly);
+  run_test("Input number invalid", test_tui_input_number_invalid);
+  run_test("Input number EOF", test_tui_input_number_eof);
+  run_test("Print todos", test_tui_print_todos);
 }

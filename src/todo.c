@@ -5,79 +5,18 @@
 #include <string.h>
 
 #include "todo.h"
+#include "todo_list.h"
+#include "utils.h"
 
-TodoList *todo_list_create(size_t capacity)
+TodoResult todo_add(const u_string *title, bool status, TodoList *todos)
 {
-  TodoList *todos = malloc(sizeof(TodoList));
-  if (!todos)
+  Todo todo = {.id = todos->next_id, .done = status, .title = u_strdup(title)};
+  TodoResult res = todo_list_add(todos, todo);
+  if (res != TODO_OK)
   {
-    return NULL;
+    free(todo.title);
+    return res;
   }
-  todos->data = malloc(capacity * sizeof(Todo));
-  if (!todos->data)
-  {
-    free(todos);
-    return NULL;
-  }
-  todos->size = 0;
-  todos->capacity = capacity;
-  todos->next_id = 1;
-  return todos;
-}
-
-TodoResult todo_list_resize(TodoList *todos)
-{
-  if (!todos || !todos->data)
-  {
-    return TODO_ERR_INVALID_ARGUMENT;
-  }
-  else if (todos->capacity > todos->size)
-  {
-    return TODO_NOTHING;
-  }
-  else if (todos->capacity == 0)
-  {
-    return TODO_ERR_ALLOC;
-  }
-  size_t new_capacity = todos->capacity * 2;
-  Todo *tmp = realloc(todos->data, new_capacity * sizeof(Todo));
-  if (!tmp && new_capacity > 0)
-  {
-    return TODO_ERR_ALLOC;
-  }
-  todos->data = tmp;
-  todos->capacity = new_capacity;
-  return TODO_OK;
-}
-
-void todo_list_destroy(TodoList **todos_ptr)
-{
-  if (todos_ptr && *todos_ptr)
-  {
-    free((*todos_ptr)->data);
-    (*todos_ptr)->data = NULL;
-
-    free(*todos_ptr);
-    *todos_ptr = NULL;
-  }
-}
-
-TodoResult todo_add(const char *title, bool status, TodoList *todos)
-{
-  TodoResult res = todo_list_resize(todos);
-  if (res != TODO_OK && res != TODO_NOTHING)
-  {
-    return TODO_ERR_ALLOC;
-  }
-
-  Todo todo;
-  todo.id = todos->next_id++;
-  todo.done = status;
-  strcpy(todo.title, title);
-
-  todos->data[todos->size] = todo;
-  todos->size++;
-
   return TODO_OK;
 }
 
@@ -91,6 +30,7 @@ TodoResult todo_delete(TodoList *todos, size_t pos)
   {
     return TODO_ERR_OUT_OF_BOUNDS;
   }
+  u_strdup_free(todos->data[pos].title);
   for (size_t i = pos; i < todos->size - 1; i++)
   {
     todos->data[i] = todos->data[i + 1];
@@ -123,13 +63,15 @@ TodoResult todo_change_title(const char *title, TodoList *todos, size_t pos)
   {
     return TODO_ERR_NOT_FOUND;
   }
-
-  strcpy(todos->data[pos].title, title);
-
+  u_strdup_free(todos->data[pos].title);
+  if (!(todos->data[pos].title = u_strdup(title)))
+  {
+    return TODO_ERR_ALLOC;
+  }
   return TODO_OK;
 }
 
-TodoResult todo_find(const TodoList *todos, size_t id, size_t *pos)
+TodoResult todo_find_idx(const TodoList *todos, size_t id, size_t *pos)
 {
   if (!todos->data || !pos)
   {
@@ -150,61 +92,14 @@ TodoResult todo_find(const TodoList *todos, size_t id, size_t *pos)
   return TODO_ERR_NOT_FOUND;
 }
 
-TodoResult todo_list_filter(bool (*fn)(const Todo todo), const TodoList *src_todos, TodoList *dest_todos)
+TodoResult todo_deep_clone(Todo *dst, const Todo src)
 {
-  if (!src_todos || !dest_todos || !src_todos->data || !dest_todos->data)
+  dst->id = src.id;
+  dst->done = src.done;
+  dst->title = u_strdup(src.title);
+  if (!dst->title)
   {
-    return TODO_ERR_INVALID_ARGUMENT;
+    return TODO_ERR_ALLOC;
   }
-  dest_todos->size = 0;
-
-  size_t max_id = 1;
-  for (size_t i = 0; i < src_todos->size; i++)
-  {
-    if (fn(src_todos->data[i]))
-    {
-      TodoResult res = todo_list_resize(dest_todos);
-      if (res != TODO_OK && res != TODO_NOTHING)
-      {
-        return TODO_ERR_ALLOC;
-      }
-
-      dest_todos->data[dest_todos->size++] = src_todos->data[i];
-      if (src_todos->data[i].id > max_id)
-      {
-        max_id = src_todos->data[i].id;
-      }
-    }
-  }
-
-  // INFO: Used only for drawing tasks, affects indentation within the id
-  dest_todos->next_id = max_id + 1;
-
   return TODO_OK;
-}
-
-void todo_list_sort(int (*cmp)(const void *, const void *), TodoList *todos)
-{
-  if (!todos || !todos->data || todos->size == 0)
-  {
-    return;
-  }
-  qsort(todos->data, todos->size, sizeof(Todo), cmp);
-}
-
-void todo_recalculate_next_id(TodoList *todos)
-{
-  if (!todos || !todos->data || todos->size == 0)
-  {
-    return;
-  }
-  size_t max_id = 0;
-  for (size_t i = 0; i < todos->size; i++)
-  {
-    if (todos->data[i].id > max_id)
-    {
-      max_id = todos->data[i].id;
-    }
-  }
-  todos->next_id = max_id + 1;
 }

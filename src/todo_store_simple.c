@@ -3,7 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "todo.h"
+#include "todo_common.h"
+#include "todo_list.h"
+#include "todo_store_simple.h"
+#include "utils.h"
 
 TodoResult todo_save(const char *filename, const TodoList *todos)
 {
@@ -53,26 +56,32 @@ TodoResult todo_load(const char *filename, TodoList *todos)
     {
       return TODO_ERR_ALLOC;
     }
-
+    // Parse the line
+    // Format: id;title;done
     size_t id;
-    char title[100];
+    u_string title[100];
     int done;
-    if (sscanf(line, "%lu;%99[^;];%d", &id, title, &done) == 3)
+    if (sscanf(line, "%lu;%99[^;];%d", &id, title, &done) != 3)
     {
-      todos->data[todos->size].id = id;
-      strcpy(todos->data[todos->size].title, title);
-      todos->data[todos->size].done = done != 0;
-      todos->size++;
+      return TODO_ERR_FILE;
     }
+    todos->data[todos->size++] = (Todo){.id = id, .title = u_strdup(title), .done = done == 1};
   }
-
   if (ferror(fp))
   {
+    for (size_t i = 0; i < todos->size; i++)
+    {
+      u_strdup_free(todos->data[i].title);
+    }
     fclose(fp);
     return TODO_ERR_FILE;
   }
   else if (fclose(fp) != 0)
   {
+    for (size_t i = 0; i < todos->size; i++)
+    {
+      u_strdup_free(todos->data[i].title);
+    }
     return TODO_ERR_FILE;
   }
   return TODO_OK;

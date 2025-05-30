@@ -1,8 +1,9 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "todo.h"
 #include "tui.h"
+#include "utils.h"
 
 void tui_print_menus(void)
 {
@@ -49,30 +50,27 @@ void tui_print_todos(const TodoList *todos)
     return;
   }
 
+  size_t max_title_len = 0;
+  for (size_t i = 0; i < todos->size; i++)
+  {
+    size_t len = strlen(todos->data[i].title);
+    if (max_title_len < len)
+    {
+      max_title_len = len;
+    }
+  }
+  size_t id_width = snprintf(NULL, 0, "%lu", todos->next_id - 1);
   printf("\n");
   for (size_t i = 0; i < todos->size; i++)
   {
     Todo todo = todos->data[i];
     char *status_str = todo.done ? "[x]" : "[ ]";
-
-    if (todos->next_id < 10)
-    {
-      printf("[%lu] %-50s %s\n", todo.id, todo.title, status_str);
-    }
-    else if (todos->next_id >= 100)
-    {
-      printf("[%3lu] %-48s %s\n", todo.id, todo.title, status_str);
-    }
-    else
-    {
-      printf("[%2lu] %-49s %s\n", todo.id, todo.title, status_str);
-    }
+    printf("[%*lu] %-*s %s\n", (int)id_width, todo.id, (int)max_title_len, todo.title, status_str);
   }
-
   printf("Total todos: %lu\n", todos->size);
 }
 
-TuiResult tui_input_text(char *buf, int size, const char *prompt)
+TuiResult tui_input_text(u_string *buf, int size, const char *prompt)
 {
   if (prompt != NULL)
   {
