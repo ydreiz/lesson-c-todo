@@ -67,7 +67,7 @@ todos-c
 │   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
 │   ├── todos_screen.c       # Source file implementing screen/menu rendering and navigation logic
 │   ├── todos.c              # Todos program entry point and application logic
-│   └── tui.c                # Source file implementing user interface functions
+│   ├── tui.c                # Source file implementing user interface functions
 │   └── utils.c              # Source file with miscellaneous utility function implementations
 ├── tests
 │   ├── test.h               # Header file declaring test-related functions
@@ -85,7 +85,7 @@ todos-c
 ## BUILDING
 
 > [!IMPORTANT]
-> Recommended: CMake >= 3.20, GCC or Clang (C23 support).
+> CMake >= 3.20, GCC or Clang (C23 support).
 
 ### Linux/macOS
 
