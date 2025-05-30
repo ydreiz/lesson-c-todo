@@ -30,7 +30,7 @@ $(BUILD_DIR)/$(TEST_NAME): $(APP_OBJ) $(TEST_OBJ)
 $(BUILD_DIR)/%.o: $(TEST_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-test: $(BUILD_DIR)/$(TEST_NAME)
+test: all $(BUILD_DIR)/$(TEST_NAME)
 	./$(BUILD_DIR)/$(TEST_NAME)
 
 clean:
