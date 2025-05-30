@@ -13,6 +13,21 @@ This is an educational project — a console TODO list written in C (C23), suppo
 
 ---
 
+## NAVIGATION
+
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Building](#building)
+- [Usage](#usage)
+- [Technical Details](#technical-details)
+- [Requirements](#requirements)
+- [Debugging](#debugging)
+- [Testing](#testing)
+- [Limitations & Critical View](#limitations--critical-view)
+- [Future Improvements](#future-improvements)
+
+---
+
 ## FEATURES
 
 - [x] Add todo with a title, completion status, and unique ID
@@ -35,22 +50,28 @@ todos-c
 ├── include
 │   ├── errors.h             # Header file declaring error codes and error handling utilities
 │   ├── print.h              # Header file declaring functions and utilities for formatted output and printing to the console
-│   ├── test.h               # Header file declaring test-related functions
+│   ├── todo_common.h        # Header file with shared constants, macros, and utility functions for todos
 │   ├── todo_filter.h        # Header file declaring functions for filtering todos
+│   ├── todo_list.h          # Header file declaring the main todo list structure and list management functions
 │   ├── todo_sort.h          # Header file declaring functions for sorting todos
+│   ├── todo_store_simple.h  # Header file declaring functions for basic file storage (save/load) of todos
 │   ├── todo.h               # Header file defining the Todo data structure and related declarations
 │   ├── tui.h                # Header file declaring UI-related functions (menus, input, output)
+│   ├── utils.h              # Header file with miscellaneous utility functions and helpers
 ├── src
 │   ├── errors.c             # Source file implementing error handling logic
-│   ├── file.c               # Source file handling file operations (loading, saving todos)
 │   ├── print.c              # Source file implementing formatted output and printing utilities for the console
-│   ├── tets.c               # Test program entry point and application logic
 │   ├── todo_filter.c        # Source file implementing filtering logic for todos
 │   ├── todo_sort.c          # Source file implementing sorting logic for todos
+│   ├── todo_store_simple.c  # Source file implementing basic file storage (save/load) of todos
 │   ├── todo.c               # Source file implementing todo management (add, edit, delete todos)
+│   ├── todos_screen.c       # Source file implementing screen/menu rendering and navigation logic
 │   ├── todos.c              # Todos program entry point and application logic
 │   └── tui.c                # Source file implementing user interface functions
+│   └── utils.c              # Source file with miscellaneous utility function implementations
 ├── tests
+│   ├── test.h               # Header file declaring test-related functions
+│   ├── tets.c               # Test program entry point and application logic
 │   ├── test_todo.c          # Manual tests, entry point is main()
 │   └── ...                  # Additional test files
 ├── Makefile                 # Build and test automation
@@ -63,7 +84,8 @@ todos-c
 
 ## BUILDING
 
-**Recommended:** CMake >= 3.20, GCC or Clang (C23 support).
+> [!IMPORTANT]
+> Recommended: CMake >= 3.20, GCC or Clang (C23 support).
 
 ### Linux/macOS
 
@@ -105,10 +127,10 @@ gcc -O2 -Iinclude src/*.c -o todos
 ### Build and run tests
 
 ```sh
-make
 make test
 ```
 
+> [!NOTE]
 > The test runner is framework-free and simply returns a nonzero exit code on failure.
 > You can inspect or expand tests in the `tests/` directory.
 
@@ -238,5 +260,5 @@ MIT (or clarify as needed).
 
 ---
 
-> **Critical Note:**
+> [!CAUTION]
 > The project is intentionally minimalist and educational, but its current state limits practical use and long-term maintainability. Prioritizing testing, extensibility, and user experience will be essential for future development.
