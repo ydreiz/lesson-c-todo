@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "tui.h"
 #include "utils.h"
 
@@ -119,4 +123,25 @@ void tui_normolized_stdin()
     ;
 }
 
-void tui_clear_screen() { printf("\033[H\033[J"); }
+void tui_clear_screen()
+{
+#ifdef _WIN32
+  HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+  DWORD cellCount;
+  DWORD count;
+  COORD homeCoords = {0, 0};
+  if (hOut == INVALID_HANDLE_VALUE)
+    return;
+  if (!GetConsoleScreenBufferInfo(hOut, &csbi))
+  {
+    return;
+  }
+  cellCount = csbi.dwSize.X * csbi.dwSize.Y;
+  FillConsoleOutputCharacter(hOut, (TCHAR)' ', cellCount, homeCoords, &count);
+  FillConsoleOutputAttribute(hOut, csbi.wAttributes, cellCount, homeCoords, &count);
+  SetConsoleCursorPosition(hOut, homeCoords);
+#else
+  printf("\033[H\033[J");
+#endif
+}
