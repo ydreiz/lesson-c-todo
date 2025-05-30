@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "tui.h"
@@ -93,20 +94,21 @@ TuiResult tui_input_text(u_string *buf, int size, const char *prompt)
 
 TuiResult tui_input_number(size_t *choice, const char *prompt)
 {
-  if (prompt != NULL)
+  char buf[128];
+  TuiResult res = tui_input_text(buf, sizeof(buf), prompt);
+  if (res != TUI_OK)
   {
-    printf("%s", prompt);
+    return res;
   }
 
-  if (scanf("%lu", choice) != 1)
+  char *endptr;
+  long val = strtol(buf, &endptr, 10);
+  if (*endptr != '\0' || endptr == buf || val < 0)
   {
-    tui_normolized_stdin();
-
     return TUI_ERR_INVALID_INPUT;
   }
 
-  tui_normolized_stdin();
-
+  *choice = (size_t)val;
   return TUI_OK;
 }
 
