@@ -166,5 +166,10 @@ TodoResult todo_list_delete(TodoList *todos, size_t id)
   {
     return TODO_ERR_NOT_FOUND;
   }
-  return todo_delete(todos, pos);
+  TodoResult res = todo_delete(todos, pos);
+  if (res == TODO_OK)
+  {
+    todo_list_shrink(todos);
+  }
+  return res;
 }
