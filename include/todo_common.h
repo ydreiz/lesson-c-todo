@@ -7,6 +7,7 @@
 
 #include "utils.h"
 
+#define TODO_VERSION "0.0.1"
 #define INITIAL_CAPACITY 3
 #define TODO_FILE "todos.txt"
 

@@ -5,6 +5,7 @@
 
 #include "errors.h"
 #include "print.h"
+#include "todo_common.h"
 #include "todo_list.h"
 #include "todo_store_simple.h"
 #include "tui.h"
@@ -18,8 +19,23 @@ void screen_todo_sort(TodoList *todos);
 void screen_todo_save(TodoList *todos, TodoResult *todo_result);
 void screen_todo_load(TodoList **todos, TodoResult *todo_result);
 
-int main(void)
+int main(int argc, char *argv[])
 {
+  if (argc > 1 && strcmp(argv[1], "--help") == 0)
+  {
+    printf("Usage: %s\n", argv[0]);
+    printf("A simple todo list application.\n");
+    printf("\nOptions:\n");
+    printf("--help          Show this help message\n");
+    printf("--version       Show the version of the application\n");
+    return EXIT_SUCCESS;
+  }
+  else if (argc > 1 && strcmp(argv[1], "--version") == 0)
+  {
+    printf("Todo List Application Version %s\n", TODO_VERSION);
+    return EXIT_SUCCESS;
+  }
+
   tui_clear_screen();
 
   TodoList *todos = todo_list_create(INITIAL_CAPACITY);
