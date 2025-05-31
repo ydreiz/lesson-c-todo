@@ -1,0 +1,32 @@
+digraph SharedLibraryExample {
+    // Graph settings
+    rankdir="LR";
+    bgcolor="transparent";
+    node [shape=box, style="filled,rounded", fillcolor=lightblue, fontname="Arial", fontsize=12];
+    edge [fontname="Arial", fontsize=10, color="#555555"];
+
+    // Main components
+    Main [label="main.c\nExecutable Program", fillcolor="#A8D08D"];
+    Library [label="add.c\nShared Library Source", fillcolor="#F4B084"];
+    LibObj [label="libadd.so\nCompiled Shared Library", fillcolor="#FFD966"];
+    Make [label="Makefile\nBuild Instructions", fillcolor="#C6E0B4"];
+
+    // Relationships
+    Make -> Library [label="build-library"];
+    Make -> Main [label="build-executable"];
+    Library -> LibObj [label="compile"];
+    Main -> LibObj [label="dlopen()\nruntime loading"];
+
+    // Function calls
+    LibObj -> Add [label="dlsym()"];
+    LibObj -> Version [label="dlsym()"];
+    
+    // Subgraph for library functions
+    subgraph cluster_functions {
+        label="Library Functions";
+        style="rounded,filled";
+        fillcolor="#EEEEEE";
+        Add [label="add(int a, int b)", fillcolor="#FFCC99"];
+        Version [label="add_version(void)", fillcolor="#FFCC99"];
+    }
+}
