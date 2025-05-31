@@ -102,15 +102,14 @@ void screen_todo_filter(const TodoList *todos)
     exit(EXIT_FAILURE);
   }
 
-  int filter_running = 1;
-  size_t filter_choice = TUI_MENU_FILTER_NITHING;
-  while (filter_running)
+  TuiMenuFilter filter_choice = TUI_MENU_FILTER_NITHING;
+  while (true)
   {
     tui_clear_screen();
     tui_print_todos(todos_filtered->size ? todos_filtered : todos);
     tui_print_menus_fileter();
 
-    tui_input_number(&filter_choice, NULL);
+    tui_input_number((size_t *)&filter_choice, NULL);
     switch (filter_choice)
     {
     case TUI_MENU_FILTER_DONE:
@@ -128,25 +127,28 @@ void screen_todo_filter(const TodoList *todos)
         exit(EXIT_FAILURE);
       }
       break;
+    case TUI_MENU_FILTER_NITHING:
+      // Do nothing, just continue the loop
+      break;
     case TUI_MENU_FILTER_EXIT:
-      filter_running = 0;
+      goto end_filter;
       break;
     }
   }
   todo_list_free(&todos_filtered);
+end_filter:
 }
 
 void screen_todo_sort(TodoList *todos)
 {
-  int sort_running = 1;
-  size_t sort_choice = TUI_MENU_SORT_NOTHING;
-  while (sort_running)
+  TuiMenuSort sort_choice = TUI_MENU_SORT_NOTHING;
+  while (true)
   {
     tui_clear_screen();
     tui_print_todos(todos);
     tui_print_menus_sort();
 
-    tui_input_number(&sort_choice, NULL);
+    tui_input_number((size_t *)&sort_choice, NULL);
     switch (sort_choice)
     {
     case TUI_MENU_SORT_ID_ASC:
@@ -167,11 +169,15 @@ void screen_todo_sort(TodoList *todos)
     case TUI_MENU_SORT_TITLE_DESC:
       todo_list_sort(todo_compare_title_desc, todos);
       break;
+    case TUI_MENU_SORT_NOTHING:
+      // Do nothing, just continue the loop
+      break;
     case TUI_MENU_SORT_EXIT:
-      sort_running = 0;
+      goto end_sort;
       break;
     }
   }
+end_sort:
 }
 
 void screen_todo_save(TodoList *todos, TodoResult *todo_result)
