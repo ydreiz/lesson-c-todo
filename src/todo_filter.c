@@ -41,6 +41,7 @@ TodoResult todo_list_filter(TodoFilterFn fn, const TodoList *src_todos, TodoList
       }
       if (todo_deep_clone(&dest_todos->data[dest_todos->size], src_todos->data[i]) == TODO_ERR_ALLOC)
       {
+        va_end(args);
         return TODO_ERR_ALLOC;
       }
       dest_todos->size++;
