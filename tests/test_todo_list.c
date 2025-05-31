@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "test.h"
+#include "todo_common.h"
 #include "todo_list.h"
 #include "utils.h"
 
@@ -256,6 +257,58 @@ bool test_todos_list_delete(void)
   return true;
 }
 
+bool tets_todos_list_shrink_invalid_argument(void)
+{
+  TodoList *todos = todo_list_create(3);
+  ASSERT_TRUE(todos != NULL);
+  ASSERT_TRUE(todos->data != NULL);
+
+  todos->data = NULL; // Simulate null data
+
+  TodoResult res = todo_list_shrink(todos);
+  ASSERT_TRUE(res == TODO_ERR_INVALID_ARGUMENT);
+
+  res = todo_list_shrink(NULL); // Should also fail due to null todos
+  ASSERT_TRUE(res == TODO_ERR_INVALID_ARGUMENT);
+
+  todo_list_free(&todos);
+  return true;
+}
+
+bool test_todos_list_shrink_no_shrink(void)
+{
+  TodoList *todos = todo_list_create(3);
+  ASSERT_TRUE(todos != NULL);
+  ASSERT_TRUE(todos->data != NULL);
+
+  TodoResult res = todo_list_shrink(todos);
+  ASSERT_TRUE(res == TODO_NOTHING); // Should size is equal zero
+
+  fill_stub_todos(todos, 3);
+
+  res = todo_list_shrink(todos);
+  ASSERT_TRUE(res == TODO_NOTHING); // Should size is not less than capacity
+
+  todo_list_free(&todos);
+  return true;
+}
+
+bool test_todos_list_shring(void)
+{
+  TodoList *todos = todo_list_create(1000);
+  ASSERT_TRUE(todos != NULL);
+  ASSERT_TRUE(todos->data != NULL);
+
+  fill_stub_todos(todos, 10);
+
+  TodoResult res = todo_list_shrink(todos);
+  ASSERT_TRUE(res == TODO_OK);        // Should succeed in shrinking
+  ASSERT_TRUE(todos->capacity == 20); // Capacity should be reduced
+
+  todo_list_free(&todos);
+  return true;
+}
+
 void run_test_todo_list(void)
 {
   printf("==== TODO LIST ====\n");
@@ -280,4 +333,8 @@ void run_test_todo_list(void)
   run_test("Todos List Delete Array Empty", test_todos_list_delete_array_empty);
   run_test("Todos List Delete Not Found", tets_todos_list_delete_not_found);
   run_test("Todos List Delete", test_todos_list_delete);
+
+  run_test("Todos List Shrink Invalid Argument", tets_todos_list_shrink_invalid_argument);
+  run_test("Todos List Shrink No Shrink", test_todos_list_shrink_no_shrink);
+  run_test("Todos List Shrinked", test_todos_list_shring);
 }

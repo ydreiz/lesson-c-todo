@@ -9,6 +9,8 @@ TodoList *todo_list_create(size_t capacity);
 
 TodoResult todo_list_resize(TodoList *todos);
 
+TodoResult todo_list_shrink(TodoList *todos);
+
 void todo_list_free(TodoList **todos);
 
 void todo_list_recalculate_next_id(TodoList *todos);

@@ -63,6 +63,33 @@ TodoResult todo_list_resize(TodoList *todos)
   return TODO_OK;
 }
 
+TodoResult todo_list_shrink(TodoList *todos)
+{
+  if (!todos || !todos->data)
+  {
+    return TODO_ERR_INVALID_ARGUMENT;
+  }
+  // If the fill is less than 25%, we shrink it.
+  float fill = (float)todos->size / (float)todos->capacity;
+  if (fill >= 0.25f)
+  {
+    return TODO_NOTHING;
+  }
+  size_t new_capacity = (todos->size == 0) ? INITIAL_CAPACITY : todos->size * 2;
+  if (new_capacity >= todos->capacity)
+  {
+    return TODO_NOTHING;
+  }
+  Todo *tmp = realloc(todos->data, new_capacity * sizeof(Todo));
+  if (!tmp && new_capacity > 0)
+  {
+    return TODO_ERR_ALLOC;
+  }
+  todos->data = tmp;
+  todos->capacity = new_capacity;
+  return TODO_OK;
+}
+
 void todo_list_free(TodoList **todos)
 {
   if (todos && *todos)
