@@ -115,7 +115,7 @@ bool test_tui_input_number_invalid(void)
   return true;
 }
 
-bool test_tui_input_number_eof(void)
+bool test_tui_input_number_empty(void)
 {
   FILE *old_stdin = stdin;
 
@@ -126,7 +126,7 @@ bool test_tui_input_number_eof(void)
   stdin = input;
   TuiResult res = tui_input_number(&buf, NULL);
 
-  ASSERT_TRUE(res == TUI_ERR_INVALID_INPUT);
+  ASSERT_TRUE(res == TUI_ERR_EMPTY_INPUT);
 
   fclose(input);
 
@@ -191,6 +191,6 @@ void run_test_tui(void)
   run_test("Input text EOF", test_tui_input_text_eof);
   run_test("Input number successfuly", test_tui_input_number_successfuly);
   run_test("Input number invalid", test_tui_input_number_invalid);
-  run_test("Input number EOF", test_tui_input_number_eof);
+  run_test("Input number empty", test_tui_input_number_empty);
   run_test("Print todos", test_tui_print_todos);
 }

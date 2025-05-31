@@ -3,15 +3,17 @@
 
 #include "todo_common.h"
 
-int todo_compare_status_asc(const void *, const void *);
-int todo_compare_status_desc(const void *, const void *);
+typedef int (*TodoComparator)(const Todo *a, const Todo *b);
 
-int todo_compare_id_asc(const void *, const void *);
-int todo_compare_id_desc(const void *, const void *);
+int todo_compare_status_asc(const Todo *a, const Todo *b);
+int todo_compare_status_desc(const Todo *a, const Todo *b);
 
-int todo_compare_title_asc(const void *, const void *);
-int todo_compare_title_desc(const void *, const void *);
+int todo_compare_id_asc(const Todo *a, const Todo *b);
+int todo_compare_id_desc(const Todo *a, const Todo *b);
 
-void todo_list_sort(int (*cmp)(const void *, const void *), TodoList *todos);
+int todo_compare_title_asc(const Todo *a, const Todo *b);
+int todo_compare_title_desc(const Todo *a, const Todo *b);
+
+void todo_list_sort(TodoComparator cmp, TodoList *todos);
 
 #endif // !TODO_SORT_H
