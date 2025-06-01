@@ -30,6 +30,10 @@ char *file_contents(const char *path) {
     fclose(file);
     fprintf(stderr, "File is empty or size is invalid.\n");
     return NULL;
+  } else if (size > 100 * 1024 * 1024) {
+    fprintf(stderr, "File size exceeds 100 MB limit: %ld bytes\n", size);
+    fclose(file);
+    return NULL;
   }
   printf("File size: %ld bytes\n", size);
   char *contents = malloc(size + 1);
