@@ -8,6 +8,55 @@
 #include "todo_store_simple.h"
 #include "utils.h"
 
+long file_size(FILE *file)
+{
+  if (!file)
+  {
+    return -1;
+  }
+  if (fseek(file, 0, SEEK_END) != 0)
+  {
+    return -1;
+  }
+  long size = ftell(file);
+  if (size == -1)
+  {
+    return -1;
+  }
+  rewind(file);
+  return size;
+}
+
+char *fille_contents(const char *path)
+{
+  FILE *fp = fopen(path, "r");
+  if (!fp)
+  {
+    return NULL;
+  }
+  long f_size = file_size(fp);
+  if (f_size < 0)
+  {
+    fclose(fp);
+    return NULL;
+  }
+  char *buf = malloc(f_size + 1);
+  if (!buf)
+  {
+    fclose(fp);
+    return NULL;
+  }
+  size_t r_size = fread(buf, 1, f_size, fp);
+  if (r_size != f_size)
+  {
+    free(buf);
+    fclose(fp);
+    return NULL;
+  }
+  buf[r_size] = '\0';
+  return buf;
+}
+
 TodoResult todo_save(const char *filename, const TodoList *todos)
 {
   FILE *fp = fopen(filename, "w");
@@ -42,47 +91,37 @@ TodoResult todo_save(const char *filename, const TodoList *todos)
 
 TodoResult todo_load(const char *filename, TodoList *todos)
 {
-  FILE *fp = fopen(filename, "r");
-  if (!fp)
+  char *contents = fille_contents(filename);
+  if (!contents)
   {
     return TODO_ERR_FILE;
   }
-
-  char line[256];
-  while (fgets(line, sizeof(line), fp))
+  char *line = strtok(contents, "\n");
+  while (line)
   {
+    line = strtok(NULL, "\n");
+    if (!line)
+    {
+      break;
+    }
     TodoResult result = todo_list_resize(todos);
     if (result != TODO_NOTHING && result != TODO_OK)
     {
+      free(contents);
       return TODO_ERR_ALLOC;
     }
     // Parse the line
     // Format: id;title;done
     size_t id;
-    u_string title[100];
+    char title[100];
     int done;
     if (sscanf(line, "%lu;%99[^;];%d", &id, title, &done) != 3)
     {
+      free(contents);
       return TODO_ERR_FILE;
     }
     todos->data[todos->size++] = (Todo){.id = id, .title = u_strdup(title), .done = done == 1};
   }
-  if (ferror(fp))
-  {
-    for (size_t i = 0; i < todos->size; i++)
-    {
-      u_strdup_free(todos->data[i].title);
-    }
-    fclose(fp);
-    return TODO_ERR_FILE;
-  }
-  else if (fclose(fp) != 0)
-  {
-    for (size_t i = 0; i < todos->size; i++)
-    {
-      u_strdup_free(todos->data[i].title);
-    }
-    return TODO_ERR_FILE;
-  }
+  free(contents);
   return TODO_OK;
 }
