@@ -99,11 +99,6 @@ TodoResult todo_load(const char *filename, TodoList *todos)
   char *line = strtok(contents, "\n");
   while (line)
   {
-    line = strtok(NULL, "\n");
-    if (!line)
-    {
-      break;
-    }
     TodoResult result = todo_list_resize(todos);
     if (result != TODO_NOTHING && result != TODO_OK)
     {
@@ -121,6 +116,7 @@ TodoResult todo_load(const char *filename, TodoList *todos)
       return TODO_ERR_FILE;
     }
     todos->data[todos->size++] = (Todo){.id = id, .title = u_strdup(title), .done = done == 1};
+    line = strtok(NULL, "\n");
   }
   free(contents);
   return TODO_OK;
