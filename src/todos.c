@@ -19,21 +19,37 @@ void screen_todo_sort(TodoList *todos);
 void screen_todo_save(TodoList *todos, TodoResult *todo_result);
 void screen_todo_load(TodoList **todos, TodoResult *todo_result);
 
+void print_usage(const char *prog_name)
+{
+  printf("Usage: %s [options]\n", prog_name);
+  printf("A simple todo list application.\n");
+  printf("\nOptions:\n");
+  printf("--help          Show this help message\n");
+  printf("--version       Show the version of the application\n");
+}
+
+void print_version(void) { printf("Todo List Application Version %s\n", TODO_VERSION); }
+
 int main(int argc, char *argv[])
 {
-  if (argc > 1 && strcmp(argv[1], "--help") == 0)
+  if (argc > 1)
   {
-    printf("Usage: %s\n", argv[0]);
-    printf("A simple todo list application.\n");
-    printf("\nOptions:\n");
-    printf("--help          Show this help message\n");
-    printf("--version       Show the version of the application\n");
-    return EXIT_SUCCESS;
-  }
-  else if (argc > 1 && strcmp(argv[1], "--version") == 0)
-  {
-    printf("Todo List Application Version %s\n", TODO_VERSION);
-    return EXIT_SUCCESS;
+    if (strcmp(argv[1], "--help") == 0)
+    {
+      print_usage(argv[0]);
+      exit(EXIT_SUCCESS);
+    }
+    else if (strcmp(argv[1], "--version") == 0)
+    {
+      print_version();
+      exit(EXIT_SUCCESS);
+    }
+    else
+    {
+      fprintf(stderr, "Unknown option: %s\n", argv[1]);
+      print_usage(argv[0]);
+      exit(EXIT_FAILURE);
+    }
   }
 
   tui_clear_screen();
